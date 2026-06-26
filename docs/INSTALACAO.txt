@@ -1,0 +1,109 @@
+CARMO CUIDA - INSTALACAO
+========================
+
+Este sistema foi pensado para funcionar como o ACE:
+
+- GitHub Pages hospeda index.html e painel.html.
+- Google Apps Script recebe/envia dados.
+- Google Sheets guarda as denuncias.
+- Google Drive guarda as fotos.
+
+1. Criar planilha
+-----------------
+Crie uma planilha no Google Drive da conta acecarmorj@gmail.com:
+
+CarmoCuida - Denuncias
+
+O Apps Script deve ser criado a partir desta propria planilha:
+
+Extensoes > Apps Script
+
+Assim, o codigo cria as abas na mesma planilha em que esta sendo executado.
+
+2. Criar pasta das fotos
+------------------------
+Crie uma pasta no Google Drive:
+
+CarmoCuida - Fotos
+
+Copie o ID da pasta. O ID fica na URL:
+
+https://drive.google.com/drive/folders/ID_DA_PASTA
+
+3. Criar Apps Script
+--------------------
+No Google Apps Script, crie um projeto chamado:
+
+CarmoCuida API
+
+Cole o conteudo de:
+
+D:\fotodenuncia\apps-script\Code.gs
+
+O arquivo:
+
+D:\fotodenuncia\api.txt
+
+deve ficar como copia de conferencia do mesmo script.
+
+4. Configurar Script Properties
+-------------------------------
+Em Apps Script > Project Settings > Script Properties, adicione:
+
+CARMOCUIDA_PHOTOS_FOLDER_ID = ID_DA_PASTA
+CARMOCUIDA_PANEL_PASSWORD = senha_geral_do_painel
+
+Opcionalmente, em vez da senha em texto, use:
+
+CARMOCUIDA_PANEL_PASSWORD_SHA256 = hash_sha256_da_senha
+
+Nao coloque senha real nos arquivos do GitHub.
+
+A propriedade CARMOCUIDA_SPREADSHEET_ID nao e obrigatoria quando o script estiver dentro da propria planilha. O codigo usa a planilha ativa automaticamente.
+
+5. Preparar planilha
+--------------------
+No editor do Apps Script, execute a funcao:
+
+CarmoCuida_setup
+
+Ela cria as abas e cabecalhos necessarios.
+
+6. Publicar Web App
+-------------------
+Em Apps Script:
+
+Deploy > New deployment > Web app
+
+Configuracao sugerida:
+
+Execute as: Me
+Who has access: Anyone
+
+Copie a URL terminada em /exec.
+
+7. Configurar GitHub Pages
+--------------------------
+Abra:
+
+D:\fotodenuncia\assets\runtime-config.js
+
+Cole a URL do Apps Script em API_URL.
+
+Depois suba a pasta D:\fotodenuncia para o GitHub e ative GitHub Pages.
+
+8. URLs finais
+--------------
+Cidadao:
+
+https://usuario.github.io/repositorio/
+
+Painel:
+
+https://usuario.github.io/repositorio/painel.html
+
+9. Observacoes
+--------------
+- GPS e camera funcionam melhor com HTTPS. Por isso o GitHub Pages e importante.
+- O painel usa login simples com senha validada no Apps Script.
+- A tela do cidadao nao exige cadastro.

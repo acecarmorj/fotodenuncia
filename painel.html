@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#12382a">
+  <title>Painel CarmoCuida</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQX82I5nQL1YcXRaA3j47nJX9A2X+Z8=" crossorigin="">
+  <link rel="stylesheet" href="./assets/styles.css">
+</head>
+<body class="panel-page">
+  <div class="login-screen" id="loginScreen">
+    <form class="login-box" id="loginForm">
+      <span class="brand-mark">CC</span>
+      <h1>CarmoCuida</h1>
+      <label class="field-label" for="passwordInput">Senha do painel</label>
+      <input id="passwordInput" type="password" autocomplete="current-password" required>
+      <button class="primary-button" type="submit">Entrar</button>
+      <p class="form-message" id="loginMessage" role="status"></p>
+    </form>
+  </div>
+
+  <div class="panel-shell" id="panelShell" hidden>
+    <aside class="panel-sidebar">
+      <div class="panel-brand">
+        <span class="brand-mark">CC</span>
+        <div>
+          <strong>CarmoCuida</strong>
+          <small>Painel de denuncias</small>
+        </div>
+      </div>
+      <nav class="panel-nav">
+        <button class="nav-button is-active" type="button" data-focus-section="overview">Resumo</button>
+        <button class="nav-button" type="button" data-focus-section="mapPanel">Mapa</button>
+        <button class="nav-button" type="button" data-focus-section="listPanel">Denuncias</button>
+      </nav>
+      <button class="secondary-button" type="button" id="logoutButton">Sair</button>
+    </aside>
+
+    <main class="panel-main">
+      <header class="panel-topbar">
+        <div>
+          <h1>Painel operacional</h1>
+          <p id="lastSync">Aguardando sincronizacao.</p>
+        </div>
+        <div class="topbar-actions">
+          <button class="secondary-button" type="button" id="refreshButton">Atualizar</button>
+          <button class="secondary-button" type="button" id="exportButton">Exportar CSV</button>
+        </div>
+      </header>
+
+      <section class="stats-grid" id="overview">
+        <article class="stat-card"><span>Total</span><strong id="statTotal">0</strong></article>
+        <article class="stat-card"><span>Novas</span><strong id="statNew">0</strong></article>
+        <article class="stat-card"><span>Dengue</span><strong id="statDengue">0</strong></article>
+        <article class="stat-card"><span>Sem GPS</span><strong id="statNoGps">0</strong></article>
+      </section>
+
+      <section class="filters-card">
+        <label>
+          Tipo
+          <select id="filterCategory">
+            <option value="">Todos</option>
+            <option value="lixo">Lixo</option>
+            <option value="dengue">Foco de dengue</option>
+            <option value="terreno">Terreno baldio</option>
+          </select>
+        </label>
+        <label>
+          Status
+          <select id="filterStatus">
+            <option value="">Todos</option>
+            <option value="nova">Nova</option>
+            <option value="triagem">Em triagem</option>
+            <option value="encaminhada">Encaminhada</option>
+            <option value="vistoria">Em vistoria</option>
+            <option value="resolvida">Resolvida</option>
+            <option value="improcedente">Improcedente</option>
+          </select>
+        </label>
+        <label>
+          Territorio
+          <select id="filterTerritory">
+            <option value="">Todos</option>
+          </select>
+        </label>
+        <label>
+          Busca
+          <input id="filterSearch" type="search" placeholder="Protocolo, telefone, referencia">
+        </label>
+      </section>
+
+      <section class="panel-grid">
+        <article class="map-panel" id="mapPanel">
+          <div class="panel-card-head">
+            <div>
+              <h2>Mapa territorial</h2>
+              <p id="mapSummary">Base territorial do ACE com denuncias sobrepostas.</p>
+            </div>
+            <div class="map-toggles">
+              <button class="toggle-button is-on" type="button" data-map-layer="territories">Territorios</button>
+              <button class="toggle-button is-on" type="button" data-map-layer="heat">Calor</button>
+            </div>
+          </div>
+          <div id="reportMap" class="report-map"></div>
+        </article>
+
+        <article class="list-panel" id="listPanel">
+          <div class="panel-card-head">
+            <div>
+              <h2>Denuncias</h2>
+              <p id="listSummary">Nenhuma denuncia carregada.</p>
+            </div>
+          </div>
+          <div class="report-list" id="reportList"></div>
+        </article>
+
+        <article class="detail-panel" id="detailPanel">
+          <div class="panel-card-head">
+            <div>
+              <h2>Detalhes</h2>
+              <p id="detailSubtitle">Selecione uma denuncia.</p>
+            </div>
+          </div>
+          <div class="detail-empty" id="detailEmpty">Nenhuma denuncia selecionada.</div>
+          <div class="detail-content" id="detailContent" hidden></div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js" integrity="sha256-65UqrlgGoRAnKfKRuriH3eeDrOhZgZo1SCenduc+SGo=" crossorigin=""></script>
+  <script src="./assets/runtime-config.js"></script>
+  <script src="./assets/carmo-territorios-data.js"></script>
+  <script src="./assets/painel.js"></script>
+</body>
+</html>

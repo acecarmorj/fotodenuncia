@@ -1,0 +1,36 @@
+# CarmoCuida
+
+Sistema online para receber FotoDenuncias de:
+
+- Lixo
+- Foco de dengue
+- Terreno baldio
+
+O projeto segue o mesmo modelo do ACE:
+
+- GitHub Pages para as telas publicas.
+- Google Apps Script para API.
+- Google Sheets para armazenar denuncias.
+- Google Drive para armazenar fotos.
+
+## Estrutura
+
+- `index.html`: tela simples do cidadao.
+- `painel.html`: painel interno com login simples.
+- `assets/`: CSS, JavaScript e mapa territorial.
+- `apps-script/Code.gs`: codigo para colar no Google Apps Script.
+- `api.txt`: copia do `Code.gs`, no mesmo estilo do ACE.
+- `ROTEIRO_CARMOCUIDA.txt`: roteiro e historico das alteracoes.
+- `docs/INSTALACAO.txt`: passo a passo para publicar.
+
+## Configuracao rapida
+
+1. Crie ou abra a planilha `CarmoCuida - Denuncias`.
+2. Na propria planilha, abra `Extensoes > Apps Script`.
+3. Cole o conteudo de `apps-script/Code.gs`.
+4. Configure as Script Properties indicadas em `docs/INSTALACAO.txt`.
+5. Publique como Web App.
+6. Copie a URL do Web App para `assets/runtime-config.js`.
+7. Suba a pasta no GitHub Pages.
+
+Nunca coloque senha real dentro dos arquivos do GitHub.

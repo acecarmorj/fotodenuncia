@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#136f4b">
+  <title>CarmoCuida</title>
+  <link rel="stylesheet" href="./assets/styles.css">
+</head>
+<body class="citizen-page">
+  <main class="citizen-shell">
+    <header class="citizen-header">
+      <div>
+        <span class="brand-mark">CC</span>
+        <h1>CarmoCuida</h1>
+        <p>FotoDenuncia de lixo, foco de dengue e terreno baldio.</p>
+      </div>
+    </header>
+
+    <form class="citizen-form" id="reportForm">
+      <section class="citizen-card">
+        <label class="field-label" for="photoInput">Foto</label>
+        <input id="photoInput" class="file-input" type="file" accept="image/*" capture="environment" required>
+        <button class="photo-button" type="button" id="photoButton">Tirar ou escolher foto</button>
+        <img class="photo-preview" id="photoPreview" alt="Previa da denuncia" hidden>
+      </section>
+
+      <section class="citizen-card">
+        <span class="field-label">Tipo</span>
+        <div class="type-grid" role="radiogroup" aria-label="Tipo da denuncia">
+          <label class="type-option">
+            <input type="radio" name="category" value="lixo" checked>
+            <span>Lixo</span>
+          </label>
+          <label class="type-option">
+            <input type="radio" name="category" value="dengue">
+            <span>Foco de dengue</span>
+          </label>
+          <label class="type-option">
+            <input type="radio" name="category" value="terreno">
+            <span>Terreno baldio</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="citizen-card">
+        <div class="location-row">
+          <div>
+            <span class="field-label">Localizacao</span>
+            <p id="locationStatus">Aguardando GPS.</p>
+          </div>
+          <button class="secondary-button" type="button" id="locationButton">Usar GPS</button>
+        </div>
+        <label class="field-label small-label" for="referenceInput">Referencia, se precisar</label>
+        <textarea id="referenceInput" rows="2" maxlength="240" placeholder="Ex.: perto da escola, rua, bairro ou ponto conhecido"></textarea>
+      </section>
+
+      <section class="citizen-card">
+        <label class="field-label" for="phoneInput">Telefone opcional</label>
+        <input id="phoneInput" type="tel" maxlength="40" inputmode="tel" placeholder="(22) 99999-9999">
+      </section>
+
+      <button class="primary-button submit-button" type="submit" id="submitButton">Enviar denuncia</button>
+      <p class="form-message" id="formMessage" role="status"></p>
+    </form>
+  </main>
+
+  <script src="./assets/runtime-config.js"></script>
+  <script src="./assets/app.js"></script>
+</body>
+</html>
