@@ -63,6 +63,8 @@ Historico
 - Adicionada a funcao CarmoCuida_configurarInicial(), que cria/verifica as abas, cria a pasta de fotos se faltar e configura a senha inicial do painel.
 - Desfeita a alteracao solicitada depois: removidos os atalhos criarPlanilhas(), criarAbas() e o menu onOpen().
 - Removida a senha fixa do codigo antes de publicar no GitHub. A senha inicial agora e gerada automaticamente por CarmoCuida_configurarInicial().
+- Criado repositório separado no GitHub: https://github.com/acecarmorj/fotodenuncia
+- Publicado commit inicial no repositório acecarmorj/fotodenuncia, branch main.
 
 Proximos passos
 ---------------
