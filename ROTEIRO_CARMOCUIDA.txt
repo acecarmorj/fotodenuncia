@@ -65,10 +65,11 @@ Historico
 - Removida a senha fixa do codigo antes de publicar no GitHub. A senha inicial agora e gerada automaticamente por CarmoCuida_configurarInicial().
 - Criado repositorio separado no GitHub: https://github.com/acecarmorj/fotodenuncia
 - Publicado commit inicial no repositorio acecarmorj/fotodenuncia, branch main.
+- GitHub Pages habilitado a partir da branch main, pasta raiz.
+- Endereco publico esperado: https://acecarmorj.github.io/fotodenuncia/
 
 Proximos passos
 ---------------
 1. Revisar visual e fluxo com o usuario.
-2. Configurar GitHub Pages do repositorio fotodenuncia.
-3. Configurar Apps Script/Sheets/Drive na conta acecarmorj@gmail.com.
-4. Testar envio real com a planilha e Drive configurados.
+2. Configurar Apps Script/Sheets/Drive na conta acecarmorj@gmail.com.
+3. Testar envio real com a planilha e Drive configurados.
