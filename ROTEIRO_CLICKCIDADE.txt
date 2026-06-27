@@ -88,11 +88,13 @@ Historico
 - Transformado o formulario do cidadao em aplicativo instalavel (PWA).
 - Criados manifest.webmanifest, sw.js e icone quadrado assets\clickcidade-app-icon.png.
 - Adicionado funcionamento basico sem conexao para os arquivos da tela do cidadao.
-- Mantido o trabalho apenas em D:\fotodenuncia; esta versao ainda nao foi enviada ao GitHub.
+- Trabalho concluido em D:\fotodenuncia e publicado no repositorio acecarmorj/fotodenuncia.
 - Compactada a impressao dos relatorios para uma unica pagina A4 em modo paisagem.
 - Reduzidos fontes, margens, indicadores, graficos e tabela somente na impressao/PDF.
 - Ocultados mapa, fila, filtros operacionais e demais partes do painel no PDF.
 - Separada a sessao local de demonstracao da sessao normal do painel.
+- GitHub Pages atualizado com as telas publicas do ClickCidade.
+- Descricao e endereco do site atualizados nos dados do repositorio.
 
 2026-06-25
 - Definido o escopo inicial com o usuario.
