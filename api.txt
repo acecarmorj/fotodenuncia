@@ -1,31 +1,31 @@
 /**
- * CarmoCuida API
+ * ClickCidade API
  * Google Apps Script + Google Sheets + Google Drive.
  *
  * Segredos devem ficar em Script Properties:
- * - CARMOCUIDA_PHOTOS_FOLDER_ID
- * - CARMOCUIDA_PANEL_PASSWORD
+ * - CLICKCIDADE_PHOTOS_FOLDER_ID
+ * - CLICKCIDADE_PANEL_PASSWORD
  * ou
- * - CARMOCUIDA_PANEL_PASSWORD_SHA256
+ * - CLICKCIDADE_PANEL_PASSWORD_SHA256
  *
  * Uso recomendado:
- * cole este script no Apps Script da propria planilha CarmoCuida.
+ * cole este script no Apps Script da propria planilha ClickCidade.
  * As abas serao criadas na planilha ativa.
  */
 
-var CARMOCUIDA = {
-  APP_NAME: 'CarmoCuida',
-  VERSION: '20260625-inicial',
+var CLICKCIDADE = {
+  APP_NAME: 'ClickCidade',
+  VERSION: '20260626-atendimento',
   SHEETS: {
     CONFIG: 'Config',
     REPORTS: 'Denuncias',
     LOG: 'Log'
   },
   PROPS: {
-    SPREADSHEET_ID: 'CARMOCUIDA_SPREADSHEET_ID',
-    PHOTOS_FOLDER_ID: 'CARMOCUIDA_PHOTOS_FOLDER_ID',
-    PANEL_PASSWORD: 'CARMOCUIDA_PANEL_PASSWORD',
-    PANEL_PASSWORD_SHA256: 'CARMOCUIDA_PANEL_PASSWORD_SHA256'
+    SPREADSHEET_ID: 'CLICKCIDADE_SPREADSHEET_ID',
+    PHOTOS_FOLDER_ID: 'CLICKCIDADE_PHOTOS_FOLDER_ID',
+    PANEL_PASSWORD: 'CLICKCIDADE_PANEL_PASSWORD',
+    PANEL_PASSWORD_SHA256: 'CLICKCIDADE_PANEL_PASSWORD_SHA256'
   },
   HEADERS: {
     Config: ['chave', 'valor', 'observacao'],
@@ -49,7 +49,12 @@ var CARMOCUIDA = {
       'responsible',
       'priority',
       'source',
-      'userAgent'
+      'userAgent',
+      'citizenName',
+      'resolutionPhotoId',
+      'resolutionPhotoUrl',
+      'resolutionPhotoDownloadUrl',
+      'resolvedAt'
     ],
     Log: ['createdAt', 'action', 'message', 'payload']
   },
@@ -68,37 +73,39 @@ var CARMOCUIDA = {
   }
 };
 
-function CarmoCuida_setup() {
+function ClickCidade_setup() {
   var ss = ensureStructure_();
   appendLog_('setup', 'Estrutura verificada.', { spreadsheetId: ss.getId() });
   return {
     ok: true,
-    app: CARMOCUIDA.APP_NAME,
-    version: CARMOCUIDA.VERSION,
+    app: CLICKCIDADE.APP_NAME,
+    version: CLICKCIDADE.VERSION,
     spreadsheetId: ss.getId(),
     spreadsheetUrl: ss.getUrl(),
     passwordConfigured: isPanelPasswordConfigured_(),
-    photosFolderConfigured: !!getScriptProperty_(CARMOCUIDA.PROPS.PHOTOS_FOLDER_ID)
+    photosFolderConfigured: !!getScriptProperty_(CLICKCIDADE.PROPS.PHOTOS_FOLDER_ID)
   };
 }
 
-function CarmoCuida_configurarInicial() {
+function ClickCidade_configurarInicial() {
   var ss = ensureStructure_();
-  var props = PropertiesService.getScriptProperties();
-  var folderId = props.getProperty(CARMOCUIDA.PROPS.PHOTOS_FOLDER_ID);
+  var folderId = getScriptProperty_(CLICKCIDADE.PROPS.PHOTOS_FOLDER_ID);
   var folder;
   var generatedPassword = '';
 
   if (folderId) {
     folder = DriveApp.getFolderById(folderId);
+    if (folder.getName() === 'CarmoCuida - Fotos') {
+      folder.setName('ClickCidade - Fotos');
+    }
   } else {
-    folder = DriveApp.createFolder('CarmoCuida - Fotos');
-    props.setProperty(CARMOCUIDA.PROPS.PHOTOS_FOLDER_ID, folder.getId());
+    folder = DriveApp.createFolder('ClickCidade - Fotos');
+    setScriptProperty_(CLICKCIDADE.PROPS.PHOTOS_FOLDER_ID, folder.getId());
   }
 
-  if (!props.getProperty(CARMOCUIDA.PROPS.PANEL_PASSWORD) && !props.getProperty(CARMOCUIDA.PROPS.PANEL_PASSWORD_SHA256)) {
+  if (!getScriptProperty_(CLICKCIDADE.PROPS.PANEL_PASSWORD) && !getScriptProperty_(CLICKCIDADE.PROPS.PANEL_PASSWORD_SHA256)) {
     generatedPassword = createInitialPanelPassword_();
-    props.setProperty(CARMOCUIDA.PROPS.PANEL_PASSWORD, generatedPassword);
+    setScriptProperty_(CLICKCIDADE.PROPS.PANEL_PASSWORD, generatedPassword);
   }
 
   appendLog_('configuracao_inicial', 'Configuracao inicial aplicada.', {
@@ -110,8 +117,8 @@ function CarmoCuida_configurarInicial() {
   try {
     SpreadsheetApp.getUi().alert(
       generatedPassword
-        ? 'CarmoCuida configurado.\n\nSenha inicial do painel: ' + generatedPassword + '\n\nPasta de fotos: ' + folder.getName()
-        : 'CarmoCuida configurado.\n\nSenha do painel ja estava configurada.\n\nPasta de fotos: ' + folder.getName()
+        ? 'ClickCidade configurado.\n\nSenha inicial do painel: ' + generatedPassword + '\n\nPasta de fotos: ' + folder.getName()
+        : 'ClickCidade configurado.\n\nSenha do painel ja estava configurada.\n\nPasta de fotos: ' + folder.getName()
     );
   } catch (err) {
     // Quando executado fora da interface da planilha, apenas retorna o resultado.
@@ -119,7 +126,7 @@ function CarmoCuida_configurarInicial() {
 
   return {
     ok: true,
-    app: CARMOCUIDA.APP_NAME,
+    app: CLICKCIDADE.APP_NAME,
     spreadsheetId: ss.getId(),
     spreadsheetUrl: ss.getUrl(),
     photosFolderId: folder.getId(),
@@ -130,20 +137,23 @@ function CarmoCuida_configurarInicial() {
 
 function ensureStructure_() {
   var ss = getSpreadsheet_();
-  ensureSheetWithHeaders_(ss, CARMOCUIDA.SHEETS.CONFIG, CARMOCUIDA.HEADERS.Config);
-  ensureSheetWithHeaders_(ss, CARMOCUIDA.SHEETS.REPORTS, CARMOCUIDA.HEADERS.Denuncias);
-  ensureSheetWithHeaders_(ss, CARMOCUIDA.SHEETS.LOG, CARMOCUIDA.HEADERS.Log);
+  if (ss.getName() === 'CarmoCuida - Denuncias') {
+    DriveApp.getFileById(ss.getId()).setName('ClickCidade - Denuncias');
+  }
+  ensureSheetWithHeaders_(ss, CLICKCIDADE.SHEETS.CONFIG, CLICKCIDADE.HEADERS.Config);
+  ensureSheetWithHeaders_(ss, CLICKCIDADE.SHEETS.REPORTS, CLICKCIDADE.HEADERS.Denuncias);
+  ensureSheetWithHeaders_(ss, CLICKCIDADE.SHEETS.LOG, CLICKCIDADE.HEADERS.Log);
   seedConfig_(ss);
   return ss;
 }
 
-function CarmoCuida_useActiveSpreadsheetAsDatabase() {
+function ClickCidade_useActiveSpreadsheetAsDatabase() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   if (!ss) {
     throw new Error('Nenhuma planilha ativa encontrada.');
   }
-  setScriptProperty_(CARMOCUIDA.PROPS.SPREADSHEET_ID, ss.getId());
-  return CarmoCuida_setup();
+  setScriptProperty_(CLICKCIDADE.PROPS.SPREADSHEET_ID, ss.getId());
+  return ClickCidade_setup();
 }
 
 function doGet(e) {
@@ -186,6 +196,10 @@ function doPost(e) {
       requirePanelSession_(payload);
       return jsonResponse_(listReports_());
     }
+    if (action === 'get_photo') {
+      requirePanelSession_(payload);
+      return jsonResponse_(getPhoto_(payload));
+    }
     if (action === 'update_report') {
       requirePanelSession_(payload);
       return jsonResponse_(updateReport_(payload));
@@ -203,6 +217,7 @@ function doPost(e) {
 
 function createReport_(payload) {
   var category = normalizeCategory_(payload.category);
+  var citizenName = normalizeText_(payload.citizenName || '', 120);
   var phone = normalizeText_(payload.phone || '', 40);
   var reference = normalizeText_(payload.reference || '', 240);
   var lat = normalizeNumber_(payload.latitude);
@@ -236,10 +251,15 @@ function createReport_(payload) {
     responsible: '',
     priority: guessPriority_(category),
     source: 'web',
-    userAgent: normalizeText_(payload.userAgent || '', 500)
+    userAgent: normalizeText_(payload.userAgent || '', 500),
+    citizenName: citizenName,
+    resolutionPhotoId: '',
+    resolutionPhotoUrl: '',
+    resolutionPhotoDownloadUrl: '',
+    resolvedAt: ''
   };
 
-  appendObjects_(CARMOCUIDA.SHEETS.REPORTS, [row], CARMOCUIDA.HEADERS.Denuncias);
+  appendObjects_(CLICKCIDADE.SHEETS.REPORTS, [row], CLICKCIDADE.HEADERS.Denuncias);
   appendLog_('create_report', 'Denuncia criada: ' + row.protocol, { protocol: row.protocol, category: row.category });
   return { ok: true, report: row, generatedAt: nowIso_() };
 }
@@ -260,7 +280,7 @@ function panelLogin_(payload) {
 }
 
 function listReports_() {
-  var reports = readRowsAsObjects_(CARMOCUIDA.SHEETS.REPORTS)
+  var reports = readRowsAsObjects_(CLICKCIDADE.SHEETS.REPORTS)
     .map(normalizeReportRow_)
     .sort(function(a, b) {
       return String(b.createdAt || '').localeCompare(String(a.createdAt || ''));
@@ -273,70 +293,124 @@ function listReports_() {
   };
 }
 
+function getPhoto_(payload) {
+  var photoId = normalizeText_(payload.photoId || '', 180);
+  if (!photoId) {
+    throw new Error('Foto nao informada.');
+  }
+
+  var belongsToReport = readRowsAsObjects_(CLICKCIDADE.SHEETS.REPORTS).some(function(row) {
+    return String(row.photoId || '') === photoId || String(row.resolutionPhotoId || '') === photoId;
+  });
+  if (!belongsToReport) {
+    throw new Error('Foto nao vinculada a uma denuncia.');
+  }
+
+  var file = DriveApp.getFileById(photoId);
+  var blob = file.getBlob();
+  var mime = String(blob.getContentType() || file.getMimeType() || 'image/jpeg');
+  if (mime.indexOf('image/') !== 0) {
+    throw new Error('O arquivo da denuncia nao e uma imagem.');
+  }
+
+  return {
+    ok: true,
+    photoId: photoId,
+    photoDataUrl: 'data:' + mime + ';base64,' + Utilities.base64Encode(blob.getBytes()),
+    generatedAt: nowIso_()
+  };
+}
+
 function updateReport_(payload) {
   var id = normalizeText_(payload.id || payload.protocol || '', 120);
   if (!id) {
     throw new Error('ID da denuncia nao informado.');
   }
 
-  var rows = readRowsAsObjects_(CARMOCUIDA.SHEETS.REPORTS);
-  var found = false;
-  rows = rows.map(function(row) {
-    if (String(row.id) !== id && String(row.protocol) !== id) {
-      return row;
-    }
-    found = true;
-    row.status = normalizeStatus_(payload.status || row.status);
-    row.notes = normalizeText_(payload.notes !== undefined ? payload.notes : row.notes, 900);
-    row.responsible = normalizeText_(payload.responsible !== undefined ? payload.responsible : row.responsible, 120);
-    row.priority = normalizePriority_(payload.priority || row.priority);
-    row.updatedAt = nowIso_();
-    return row;
+  var rows = readRowsAsObjects_(CLICKCIDADE.SHEETS.REPORTS);
+  var rowIndex = rows.findIndex(function(row) {
+    return String(row.id) === id || String(row.protocol) === id;
   });
-
-  if (!found) {
+  if (rowIndex === -1) {
     throw new Error('Denuncia nao encontrada.');
   }
 
-  writeObjects_(CARMOCUIDA.SHEETS.REPORTS, rows, CARMOCUIDA.HEADERS.Denuncias);
-  appendLog_('update_report', 'Denuncia atualizada: ' + id, { id: id });
+  var row = rows[rowIndex];
+  var previousStatus = normalizeStatus_(row.status);
+  var nextStatus = normalizeStatus_(payload.status || row.status);
+  var resolutionPhoto = null;
+
+  if (payload.resolutionPhotoDataUrl) {
+    resolutionPhoto = savePhoto_(
+      payload.resolutionPhotoDataUrl,
+      payload.resolutionPhotoName || ('conclusao-' + String(row.protocol || id) + '.jpg'),
+      payload.resolutionPhotoMime
+    );
+  }
+
+  row.status = nextStatus;
+  row.notes = normalizeText_(payload.notes !== undefined ? payload.notes : row.notes, 900);
+  row.responsible = normalizeText_(payload.responsible !== undefined ? payload.responsible : row.responsible, 120);
+  row.priority = normalizePriority_(payload.priority || row.priority);
+  row.updatedAt = nowIso_();
+
+  if (resolutionPhoto) {
+    row.resolutionPhotoId = resolutionPhoto.id;
+    row.resolutionPhotoUrl = resolutionPhoto.url;
+    row.resolutionPhotoDownloadUrl = resolutionPhoto.downloadUrl;
+  }
+  if (nextStatus === 'resolvida' && !String(row.resolvedAt || '')) {
+    row.resolvedAt = row.updatedAt;
+  }
+
+  rows[rowIndex] = row;
+  writeObjects_(CLICKCIDADE.SHEETS.REPORTS, rows, CLICKCIDADE.HEADERS.Denuncias);
+  appendLog_('update_report', 'Denuncia atualizada: ' + id, {
+    id: id,
+    status: row.status,
+    resolutionPhotoAdded: !!resolutionPhoto
+  });
   return listReports_();
 }
 
 function buildStatus_() {
   return {
     ok: true,
-    app: CARMOCUIDA.APP_NAME,
-    version: CARMOCUIDA.VERSION,
+    app: CLICKCIDADE.APP_NAME,
+    version: CLICKCIDADE.VERSION,
     generatedAt: nowIso_(),
     passwordConfigured: isPanelPasswordConfigured_(),
-    spreadsheetConfigured: !!getScriptProperty_(CARMOCUIDA.PROPS.SPREADSHEET_ID),
-    photosFolderConfigured: !!getScriptProperty_(CARMOCUIDA.PROPS.PHOTOS_FOLDER_ID)
+    spreadsheetConfigured: !!getScriptProperty_(CLICKCIDADE.PROPS.SPREADSHEET_ID),
+    photosFolderConfigured: !!getScriptProperty_(CLICKCIDADE.PROPS.PHOTOS_FOLDER_ID)
   };
 }
 
 function getSpreadsheet_() {
   var active = SpreadsheetApp.getActiveSpreadsheet();
   if (active) {
-    setScriptProperty_(CARMOCUIDA.PROPS.SPREADSHEET_ID, active.getId());
+    setScriptProperty_(CLICKCIDADE.PROPS.SPREADSHEET_ID, active.getId());
     return active;
   }
-  var id = getScriptProperty_(CARMOCUIDA.PROPS.SPREADSHEET_ID);
+  var id = getScriptProperty_(CLICKCIDADE.PROPS.SPREADSHEET_ID);
   if (id) {
     return SpreadsheetApp.openById(id);
   }
-  var created = SpreadsheetApp.create('CarmoCuida - Denuncias');
-  setScriptProperty_(CARMOCUIDA.PROPS.SPREADSHEET_ID, created.getId());
+  var created = SpreadsheetApp.create('ClickCidade - Denuncias');
+  setScriptProperty_(CLICKCIDADE.PROPS.SPREADSHEET_ID, created.getId());
   return created;
 }
 
 function getPhotosFolder_() {
-  var id = getScriptProperty_(CARMOCUIDA.PROPS.PHOTOS_FOLDER_ID);
+  var id = getScriptProperty_(CLICKCIDADE.PROPS.PHOTOS_FOLDER_ID);
   if (id) {
-    return DriveApp.getFolderById(id);
+    var existing = DriveApp.getFolderById(id);
+    if (existing.getName() === 'CarmoCuida - Fotos') {
+      existing.setName('ClickCidade - Fotos');
+    }
+    return existing;
   }
-  var folder = DriveApp.createFolder('CarmoCuida - Fotos');
-  setScriptProperty_(CARMOCUIDA.PROPS.PHOTOS_FOLDER_ID, folder.getId());
+  var folder = DriveApp.createFolder('ClickCidade - Fotos');
+  setScriptProperty_(CLICKCIDADE.PROPS.PHOTOS_FOLDER_ID, folder.getId());
   return folder;
 }
 
@@ -359,15 +433,28 @@ function ensureSheetWithHeaders_(ss, sheetName, headers) {
 }
 
 function seedConfig_(ss) {
-  var sheet = ensureSheetWithHeaders_(ss, CARMOCUIDA.SHEETS.CONFIG, CARMOCUIDA.HEADERS.Config);
+  var sheet = ensureSheetWithHeaders_(ss, CLICKCIDADE.SHEETS.CONFIG, CLICKCIDADE.HEADERS.Config);
   if (sheet.getLastRow() > 1) {
+    var existing = sheet.getRange(2, 1, sheet.getLastRow() - 1, 3).getValues();
+    existing.forEach(function(row) {
+      if (row[0] === 'APP_NAME') {
+        row[1] = CLICKCIDADE.APP_NAME;
+      }
+      if (row[0] === 'VERSION') {
+        row[1] = CLICKCIDADE.VERSION;
+      }
+      if (row[0] === 'PHOTOS_FOLDER') {
+        row[2] = 'Use CLICKCIDADE_PHOTOS_FOLDER_ID';
+      }
+    });
+    sheet.getRange(2, 1, existing.length, 3).setValues(existing);
     return;
   }
   sheet.getRange(2, 1, 4, 3).setValues([
-    ['APP_NAME', CARMOCUIDA.APP_NAME, 'Nome publico do sistema'],
-    ['VERSION', CARMOCUIDA.VERSION, 'Versao do pacote local'],
+    ['APP_NAME', CLICKCIDADE.APP_NAME, 'Nome publico do sistema'],
+    ['VERSION', CLICKCIDADE.VERSION, 'Versao do pacote local'],
     ['PANEL_PASSWORD', 'CONFIGURAR_EM_SCRIPT_PROPERTIES', 'Nao coloque senha real na planilha'],
-    ['PHOTOS_FOLDER', 'CONFIGURAR_EM_SCRIPT_PROPERTIES', 'Use CARMOCUIDA_PHOTOS_FOLDER_ID']
+    ['PHOTOS_FOLDER', 'CONFIGURAR_EM_SCRIPT_PROPERTIES', 'Use CLICKCIDADE_PHOTOS_FOLDER_ID']
   ]);
 }
 
@@ -476,7 +563,11 @@ function normalizeReportRow_(row) {
     notes: String(row.notes || ''),
     responsible: String(row.responsible || ''),
     priority: normalizePriority_(row.priority),
-    source: String(row.source || '')
+    source: String(row.source || ''),
+    citizenName: String(row.citizenName || ''),
+    resolutionPhotoId: String(row.resolutionPhotoId || ''),
+    resolutionPhotoUrl: String(row.resolutionPhotoDownloadUrl || row.resolutionPhotoUrl || ''),
+    resolvedAt: String(row.resolvedAt || '')
   };
 }
 
@@ -501,15 +592,15 @@ function sessionCacheKey_(token) {
 }
 
 function isPanelPasswordConfigured_() {
-  return !!(getScriptProperty_(CARMOCUIDA.PROPS.PANEL_PASSWORD_SHA256) || getScriptProperty_(CARMOCUIDA.PROPS.PANEL_PASSWORD));
+  return !!(getScriptProperty_(CLICKCIDADE.PROPS.PANEL_PASSWORD_SHA256) || getScriptProperty_(CLICKCIDADE.PROPS.PANEL_PASSWORD));
 }
 
 function validatePanelPassword_(password) {
-  var hash = getScriptProperty_(CARMOCUIDA.PROPS.PANEL_PASSWORD_SHA256);
+  var hash = getScriptProperty_(CLICKCIDADE.PROPS.PANEL_PASSWORD_SHA256);
   if (hash) {
     return constantTimeEqual_(sha256Hex_(password), String(hash).toLowerCase());
   }
-  var plain = getScriptProperty_(CARMOCUIDA.PROPS.PANEL_PASSWORD);
+  var plain = getScriptProperty_(CLICKCIDADE.PROPS.PANEL_PASSWORD);
   return !!plain && constantTimeEqual_(password, plain);
 }
 
@@ -538,11 +629,11 @@ function constantTimeEqual_(a, b) {
 function createProtocol_() {
   var stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone() || 'America/Sao_Paulo', 'yyyyMMdd');
   var suffix = Utilities.getUuid().replace(/-/g, '').slice(0, 6).toUpperCase();
-  return 'CC-' + stamp + '-' + suffix;
+  return 'CLIC-' + stamp + '-' + suffix;
 }
 
 function createInitialPanelPassword_() {
-  return 'CC-' + Utilities.getUuid().replace(/-/g, '').slice(0, 8).toUpperCase();
+  return 'CLIC-' + Utilities.getUuid().replace(/-/g, '').slice(0, 8).toUpperCase();
 }
 
 function normalizeCategory_(value) {
@@ -558,7 +649,7 @@ function normalizeCategory_(value) {
 
 function normalizeStatus_(value) {
   value = normalizeText_(value || 'nova').toLowerCase();
-  return CARMOCUIDA.STATUSES[value] ? value : 'nova';
+  return CLICKCIDADE.STATUSES[value] ? value : 'nova';
 }
 
 function normalizePriority_(value) {
@@ -618,7 +709,17 @@ function safeError_(err) {
 }
 
 function getScriptProperty_(key) {
-  return PropertiesService.getScriptProperties().getProperty(key);
+  var properties = PropertiesService.getScriptProperties();
+  var value = properties.getProperty(key);
+  if (value || String(key).indexOf('CLICKCIDADE_') !== 0) {
+    return value;
+  }
+  var legacyKey = String(key).replace(/^CLICKCIDADE_/, 'CARMOCUIDA_');
+  var legacyValue = properties.getProperty(legacyKey);
+  if (legacyValue) {
+    properties.setProperty(key, legacyValue);
+  }
+  return legacyValue;
 }
 
 function setScriptProperty_(key, value) {
@@ -626,12 +727,12 @@ function setScriptProperty_(key, value) {
 }
 
 function appendLog_(action, message, payload) {
-  appendObjects_(CARMOCUIDA.SHEETS.LOG, [{
+  appendObjects_(CLICKCIDADE.SHEETS.LOG, [{
     createdAt: nowIso_(),
     action: action,
     message: message,
     payload: JSON.stringify(payload || {})
-  }], CARMOCUIDA.HEADERS.Log);
+  }], CLICKCIDADE.HEADERS.Log);
 }
 
 function appendLogSafe_(action, message, payload) {

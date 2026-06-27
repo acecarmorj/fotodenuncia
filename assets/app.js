@@ -1,18 +1,22 @@
 (function () {
   "use strict";
 
-  var config = window.CARMOCUIDA_CONFIG || {};
+  var config = window.CLICKCIDADE_CONFIG || {};
   var state = {
     photoDataUrl: "",
     photoName: "",
     photoMime: "",
-    location: null
+    location: null,
+    receipt: null,
+    installPrompt: null
   };
 
   var $ = function (id) { return document.getElementById(id); };
 
   function hasApi() {
-    return !!(config.API_URL && /^https?:\/\//i.test(config.API_URL));
+    var localDemo = /^(localhost|127\.0\.0\.1)$/i.test(location.hostname) &&
+      new URLSearchParams(location.search).get("demo") === "1";
+    return !localDemo && !!(config.API_URL && /^https?:\/\//i.test(config.API_URL));
   }
 
   function setMessage(text, tone) {
@@ -41,9 +45,9 @@
   }
 
   function localDemoCreate(payload) {
-    var reports = JSON.parse(localStorage.getItem("carmocuida_demo_reports") || "[]");
+    var reports = JSON.parse(localStorage.getItem("clickcidade_demo_reports") || "[]");
     var now = new Date().toISOString();
-    var protocol = "CC-DEMO-" + String(Date.now()).slice(-6);
+    var protocol = "CLIC-DEMO-" + String(Date.now()).slice(-6);
     var report = {
       id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
       protocol: protocol,
@@ -51,6 +55,7 @@
       updatedAt: now,
       category: payload.category,
       status: "nova",
+      citizenName: payload.citizenName || "",
       phone: payload.phone || "",
       reference: payload.reference || "",
       latitude: payload.latitude || "",
@@ -61,10 +66,13 @@
       notes: "",
       responsible: "",
       priority: payload.category === "dengue" ? "alta" : "media",
-      source: "demo"
+      source: "demo",
+      resolutionPhotoId: "",
+      resolutionPhotoUrl: "",
+      resolvedAt: ""
     };
     reports.unshift(report);
-    localStorage.setItem("carmocuida_demo_reports", JSON.stringify(reports));
+    localStorage.setItem("clickcidade_demo_reports", JSON.stringify(reports));
     return { ok: true, report: report, demo: true };
   }
 
@@ -146,10 +154,86 @@
     state.location = null;
   }
 
+  function formatReceiptDate(value) {
+    var date = new Date(value || Date.now());
+    return date.toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  }
+
+  function showReceipt(report) {
+    state.receipt = {
+      protocol: report.protocol || "",
+      createdAt: report.createdAt || new Date().toISOString()
+    };
+    $("receiptProtocol").textContent = state.receipt.protocol;
+    $("receiptDate").textContent = "Enviado em " + formatReceiptDate(state.receipt.createdAt);
+    $("reportForm").hidden = true;
+    $("receiptPanel").hidden = false;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function startNewReport() {
+    resetForm();
+    state.receipt = null;
+    $("receiptMessage").textContent = "";
+    $("receiptPanel").hidden = true;
+    $("reportForm").hidden = false;
+    setMessage("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function shareReceipt() {
+    if (!state.receipt) { return; }
+    var text = "ClickCidade - protocolo " + state.receipt.protocol +
+      ", enviado em " + formatReceiptDate(state.receipt.createdAt) + ".";
+    var shareResult = navigator.share
+      ? navigator.share({ title: "Protocolo ClickCidade", text: text })
+      : navigator.clipboard.writeText(text);
+
+    Promise.resolve(shareResult).then(function () {
+      $("receiptMessage").textContent = navigator.share ? "Protocolo compartilhado." : "Protocolo copiado.";
+    }).catch(function (error) {
+      if (!error || error.name !== "AbortError") {
+        $("receiptMessage").textContent = "Nao foi possivel compartilhar agora.";
+      }
+    });
+  }
+
+  function setupInstallation() {
+    window.addEventListener("beforeinstallprompt", function (event) {
+      event.preventDefault();
+      state.installPrompt = event;
+      $("installButton").hidden = false;
+    });
+    $("installButton").addEventListener("click", function () {
+      if (!state.installPrompt) { return; }
+      state.installPrompt.prompt();
+      state.installPrompt.userChoice.finally(function () {
+        state.installPrompt = null;
+        $("installButton").hidden = true;
+      });
+    });
+    window.addEventListener("appinstalled", function () {
+      state.installPrompt = null;
+      $("installButton").hidden = true;
+    });
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js").catch(function () {
+        // The form still works normally when installation is unavailable.
+      });
+    }
+  }
+
   function handleSubmit(event) {
     event.preventDefault();
     var submit = $("submitButton");
     var reference = $("referenceInput").value.trim();
+    var citizenName = $("citizenNameInput").value.trim();
     var phone = $("phoneInput").value.trim();
 
     if (!state.photoDataUrl) {
@@ -168,6 +252,7 @@
     postApi({
       action: "create_report",
       category: getSelectedCategory(),
+      citizenName: citizenName,
       phone: phone,
       reference: reference,
       latitude: state.location ? state.location.latitude : "",
@@ -181,9 +266,7 @@
       if (!result || !result.ok) {
         throw new Error((result && result.error) || "Nao foi possivel enviar.");
       }
-      var protocol = result.report && result.report.protocol ? result.report.protocol : "";
-      setMessage("Denuncia enviada. Protocolo: " + protocol, "success");
-      resetForm();
+      showReceipt(result.report || {});
     }).catch(function (error) {
       setMessage(error.message || "Erro ao enviar.", "error");
     }).finally(function () {
@@ -198,6 +281,9 @@
     });
     $("locationButton").addEventListener("click", requestLocation);
     $("reportForm").addEventListener("submit", handleSubmit);
+    $("shareReceiptButton").addEventListener("click", shareReceipt);
+    $("newReportButton").addEventListener("click", startNewReport);
+    setupInstallation();
 
     if (!hasApi()) {
       setMessage("Modo demonstracao local. Configure a URL do Apps Script antes de publicar.");

@@ -1,0 +1,19 @@
+{
+  "name": "ClickCidade",
+  "short_name": "ClickCidade",
+  "description": "Registro de lixo, focos de dengue e terrenos baldios.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eef1ef",
+  "theme_color": "#e5661a",
+  "icons": [
+    {
+      "src": "./assets/clickcidade-app-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

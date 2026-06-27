@@ -1,4 +1,4 @@
-CARMO CUIDA - INSTALACAO
+CLICKCIDADE - INSTALACAO
 ========================
 
 Este sistema foi pensado para funcionar como o ACE:
@@ -12,7 +12,7 @@ Este sistema foi pensado para funcionar como o ACE:
 -----------------
 Crie uma planilha no Google Drive da conta acecarmorj@gmail.com:
 
-CarmoCuida - Denuncias
+ClickCidade - Denuncias
 
 O Apps Script deve ser criado a partir desta propria planilha:
 
@@ -24,7 +24,7 @@ Assim, o codigo cria as abas na mesma planilha em que esta sendo executado.
 ------------------------
 Crie uma pasta no Google Drive:
 
-CarmoCuida - Fotos
+ClickCidade - Fotos
 
 Copie o ID da pasta. O ID fica na URL:
 
@@ -34,7 +34,7 @@ https://drive.google.com/drive/folders/ID_DA_PASTA
 --------------------
 No Google Apps Script, crie um projeto chamado:
 
-CarmoCuida API
+ClickCidade API
 
 Cole o conteudo de:
 
@@ -50,22 +50,22 @@ deve ficar como copia de conferencia do mesmo script.
 -------------------------------
 Em Apps Script > Project Settings > Script Properties, adicione:
 
-CARMOCUIDA_PHOTOS_FOLDER_ID = ID_DA_PASTA
-CARMOCUIDA_PANEL_PASSWORD = senha_geral_do_painel
+CLICKCIDADE_PHOTOS_FOLDER_ID = ID_DA_PASTA
+CLICKCIDADE_PANEL_PASSWORD = senha_geral_do_painel
 
 Opcionalmente, em vez da senha em texto, use:
 
-CARMOCUIDA_PANEL_PASSWORD_SHA256 = hash_sha256_da_senha
+CLICKCIDADE_PANEL_PASSWORD_SHA256 = hash_sha256_da_senha
 
 Nao coloque senha real nos arquivos do GitHub.
 
-A propriedade CARMOCUIDA_SPREADSHEET_ID nao e obrigatoria quando o script estiver dentro da propria planilha. O codigo usa a planilha ativa automaticamente.
+A propriedade CLICKCIDADE_SPREADSHEET_ID nao e obrigatoria quando o script estiver dentro da propria planilha. O codigo usa a planilha ativa automaticamente.
 
 5. Preparar planilha
 --------------------
 No editor do Apps Script, execute a funcao:
 
-CarmoCuida_setup
+ClickCidade_setup
 
 Ela cria as abas e cabecalhos necessarios.
 
@@ -107,3 +107,7 @@ https://usuario.github.io/repositorio/painel.html
 - GPS e camera funcionam melhor com HTTPS. Por isso o GitHub Pages e importante.
 - O painel usa login simples com senha validada no Apps Script.
 - A tela do cidadao nao exige cadastro.
+- Nome e telefone do cidadao sao opcionais.
+- A foto de conclusao no painel tambem e opcional.
+- O formulario pode ser instalado no celular quando o navegador mostrar a opcao.
+- Antes do uso oficial, apague somente as linhas de teste da aba Denuncias e mantenha o cabecalho.

@@ -1,4 +1,4 @@
-# CarmoCuida
+# ClickCidade
 
 Sistema online para receber FotoDenuncias de:
 
@@ -17,15 +17,16 @@ O projeto segue o mesmo modelo do ACE:
 
 - `index.html`: tela simples do cidadao.
 - `painel.html`: painel interno com login simples.
-- `assets/`: CSS, JavaScript e mapa territorial.
+- `assets/`: CSS, JavaScript, logos e mapa territorial.
+- `manifest.webmanifest` e `sw.js`: instalacao do formulario como aplicativo.
 - `apps-script/Code.gs`: codigo para colar no Google Apps Script.
 - `api.txt`: copia do `Code.gs`, no mesmo estilo do ACE.
-- `ROTEIRO_CARMOCUIDA.txt`: roteiro e historico das alteracoes.
+- `ROTEIRO_CLICKCIDADE.txt`: roteiro e historico das alteracoes.
 - `docs/INSTALACAO.txt`: passo a passo para publicar.
 
 ## Configuracao rapida
 
-1. Crie ou abra a planilha `CarmoCuida - Denuncias`.
+1. Crie ou abra a planilha `ClickCidade - Denuncias`.
 2. Na propria planilha, abra `Extensoes > Apps Script`.
 3. Cole o conteudo de `apps-script/Code.gs`.
 4. Configure as Script Properties indicadas em `docs/INSTALACAO.txt`.
@@ -34,3 +35,13 @@ O projeto segue o mesmo modelo do ACE:
 7. Suba a pasta no GitHub Pages.
 
 Nunca coloque senha real dentro dos arquivos do GitHub.
+
+## Recursos atuais
+
+- Identificacao e telefone opcionais.
+- Comprovante com protocolo para o cidadao.
+- Mapa em ruas, relevo ou satelite.
+- Fila de prioridade, prazos e tempo aberto.
+- Foto de conclusao opcional.
+- Relatorios por periodo, territorio e tipo.
+- Tempo medio de resolucao, CSV e impressao/PDF.

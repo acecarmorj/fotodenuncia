@@ -3,17 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#136f4b">
-  <title>CarmoCuida</title>
-  <link rel="stylesheet" href="./assets/styles.css">
+  <meta name="theme-color" content="#e5661a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>ClickCidade</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./assets/clickcidade-app-icon.png">
+  <link rel="stylesheet" href="./assets/styles.css?v=20260626-atendimento">
 </head>
 <body class="citizen-page">
   <main class="citizen-shell">
     <header class="citizen-header">
       <div>
-        <span class="brand-mark">CC</span>
-        <h1>CarmoCuida</h1>
+        <span class="brand-mark" aria-label="ClickCidade"></span>
+        <h1>ClickCidade</h1>
         <p>FotoDenuncia de lixo, foco de dengue e terreno baldio.</p>
+        <button class="secondary-button install-button" type="button" id="installButton" hidden>Instalar ClickCidade</button>
       </div>
     </header>
 
@@ -56,6 +61,8 @@
       </section>
 
       <section class="citizen-card">
+        <label class="field-label" for="citizenNameInput">Nome opcional</label>
+        <input id="citizenNameInput" type="text" maxlength="120" autocomplete="name" placeholder="Como podemos chamar voce?">
         <label class="field-label" for="phoneInput">Telefone opcional</label>
         <input id="phoneInput" type="tel" maxlength="40" inputmode="tel" placeholder="(22) 99999-9999">
       </section>
@@ -63,9 +70,22 @@
       <button class="primary-button submit-button" type="submit" id="submitButton">Enviar denuncia</button>
       <p class="form-message" id="formMessage" role="status"></p>
     </form>
+
+    <section class="citizen-receipt" id="receiptPanel" aria-live="polite" hidden>
+      <span class="receipt-check" aria-hidden="true">&#10003;</span>
+      <p class="receipt-eyebrow">Denuncia recebida</p>
+      <h2 id="receiptProtocol"></h2>
+      <p id="receiptDate"></p>
+      <p class="receipt-note">Guarde este protocolo para acompanhar o atendimento.</p>
+      <div class="receipt-actions">
+        <button class="primary-button" type="button" id="shareReceiptButton">Compartilhar protocolo</button>
+        <button class="secondary-button" type="button" id="newReportButton">Fazer outra denuncia</button>
+      </div>
+      <p class="form-message" id="receiptMessage" role="status"></p>
+    </section>
   </main>
 
-  <script src="./assets/runtime-config.js"></script>
-  <script src="./assets/app.js"></script>
+  <script src="./assets/runtime-config.js?v=20260626-atendimento"></script>
+  <script src="./assets/app.js?v=20260626-atendimento"></script>
 </body>
 </html>

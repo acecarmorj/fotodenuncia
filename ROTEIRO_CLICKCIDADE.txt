@@ -1,0 +1,130 @@
+CLICKCIDADE - ROTEIRO DO PROJETO
+================================
+
+Objetivo
+--------
+Criar um sistema online, nos moldes do ACE, para que o cidadao envie FotoDenuncias de lixo, foco de dengue ou terreno baldio, e para que a equipe acompanhe tudo em um painel com mapa territorial de Carmo/RJ.
+
+Decisoes combinadas
+-------------------
+1. Nome do sistema: ClickCidade.
+2. Modelo: opcao 3, online.
+3. Hospedagem das telas: GitHub Pages, como no ACE.
+4. Backend: Google Apps Script.
+5. Banco de dados: Google Sheets.
+6. Fotos: Google Drive.
+7. Conta a usar depois: acecarmorj@gmail.com.
+8. Desenvolvimento inicial: tudo local em D:\fotodenuncia.
+9. GitHub: subir somente depois, junto com o usuario.
+10. Cidadao: fluxo mais simples possivel.
+11. Painel: mais completo, com mapa, filtros, fotos, status e relatorios.
+12. Login do painel: senha geral.
+13. Notificacao: por enquanto nao; basta aparecer no painel.
+14. Tipos de denuncia: Lixo, Foco de dengue, Terreno baldio.
+15. Telefone do cidadao: opcional.
+15.1. Nome do cidadao: opcional.
+16. Localizacao: usar GPS; se negar GPS, permitir referencia e marcar como sem GPS confirmado.
+17. Status: Nova, Em triagem, Encaminhada, Em vistoria, Resolvida, Improcedente.
+18. Mapa: usar inicialmente a base territorial pronta do ACE em D:\ACE-FINAL\assets\carmo-territorios-data.js.
+19. O Apps Script deve criar as abas na mesma planilha em que estiver sendo executado.
+20. Foto de conclusao: opcional; nunca bloquear a mudanca para Resolvida.
+21. Prazos operacionais: alta 2 dias, media 5 dias e baixa 10 dias.
+22. O formulario do cidadao deve poder ser instalado no celular como aplicativo.
+
+Arquivos de manutencao obrigatorios
+-----------------------------------
+1. apps-script\Code.gs
+   Codigo principal do Google Apps Script.
+
+2. api.txt
+   Copia do Code.gs, igual ao costume do ACE.
+
+3. ROTEIRO_CLICKCIDADE.txt
+   Este roteiro. Deve ser atualizado a cada mudanca relevante.
+
+Historico
+---------
+2026-06-26
+- Nome do sistema alterado de CarmoCuida para ClickCidade.
+- Renomeados textos, configuracoes, arquivos de manutencao, funcoes da API, chaves locais e prefixos dos novos protocolos.
+- Adicionada migracao automatica das antigas Script Properties para preservar senha, planilha e pasta de fotos.
+- Adicionado o novo simbolo com pin de localizacao, camera e paisagem do interior.
+- Logo final atualizado com a paisagem quase real de Carmo: montanha ao fundo, morro verde, cidade baixa e jardim.
+- Adicionado ao painel um seletor de mapa com tres modos: Ruas, Relevo e Satelite.
+- Mantidas as camadas independentes de Territorios e Calor sobre qualquer tipo de mapa.
+- A ultima escolha de mapa passa a ser lembrada no navegador.
+- Ajustado o controle de mapas para telas de computador e tablet.
+- Corrigida a altura excessiva do mapa, que fazia as imagens serem carregadas fora da area visivel.
+- Definido que o painel sera usado em computador ou tablet de 8,7 polegadas; o index do cidadao sera usado em celulares.
+- Corrigida a largura interna do mapa para nao cortar os controles no tablet em modo retrato.
+- Corrigida a assinatura de seguranca do CSS do Leaflet, que impedia os estilos do mapa de carregar e deixava as imagens separadas.
+- Criada a area Relatorios dentro do painel operacional.
+- Adicionados filtros de periodo, tipo e territorio para os relatorios.
+- Adicionados indicadores de recebidas, em aberto, resolvidas e taxa de resolucao.
+- Adicionados graficos por tipo e situacao dos atendimentos e tabela consolidada por territorio.
+- Adicionadas as opcoes de exportar o relatorio em CSV e imprimir ou salvar em PDF.
+- Adicionado controle de versao nos arquivos do painel para evitar carregamento de codigo antigo pelo cache do navegador.
+- Ajustada a identificacao territorial para associar pontos em ruas ao poligono mais proximo em um raio de 180 metros.
+- Ajustado o carregamento das fotos do Google Drive com enderecos alternativos e botao de abertura direta em caso de bloqueio.
+- Criada na API a acao autenticada get_photo, que entrega ao painel a imagem armazenada no Drive sem depender de link publico.
+- O painel agora busca a foto pela sessao autenticada, mantem cache temporario e usa os links do Drive apenas como alternativa.
+- Aplicada nova identidade visual inspirada em operacao urbana e Defesa Civil.
+- O laranja passou a ser a cor principal do ClickCidade, com barra lateral grafite no painel.
+- Mantidas cores semanticas distintas: verde para resolucao, vermelho para dengue e urgencia, azul para localizacao e terreno.
+- Atualizados formulario do cidadao, login, painel, mapa, indicadores e relatorios para a nova paleta.
+- Adicionado nome opcional do cidadao, mantendo telefone tambem opcional.
+- Criado comprovante de envio com protocolo, data, compartilhamento e novo registro.
+- Ampliada a API com nome do cidadao, foto opcional da conclusao e data de resolucao.
+- Os novos campos foram acrescentados ao final da aba Denuncias para preservar a estrutura anterior.
+- Criada fila de prioridade no painel com casos atrasados e prazos operacionais.
+- Adicionados tempo aberto, prazo restante, prioridade editavel e identificacao do cidadao nos detalhes.
+- Adicionada comparacao entre foto recebida e foto opcional da conclusao.
+- Confirmado que a ausencia de foto final nao impede marcar uma denuncia como Resolvida.
+- Adicionado periodo personalizado aos relatorios, com datas inicial e final.
+- Adicionado indicador de tempo medio entre recebimento e resolucao.
+- Ampliado o CSV com prioridade, nome do cidadao e data de resolucao.
+- Criado modo demonstracao exclusivo para localhost, sem gravar testes no Google Sheets.
+- Adicionados tres registros ficticios no modo local para testar fila, prazos e resolucao.
+- Transformado o formulario do cidadao em aplicativo instalavel (PWA).
+- Criados manifest.webmanifest, sw.js e icone quadrado assets\clickcidade-app-icon.png.
+- Adicionado funcionamento basico sem conexao para os arquivos da tela do cidadao.
+- Mantido o trabalho apenas em D:\fotodenuncia; esta versao ainda nao foi enviada ao GitHub.
+- Compactada a impressao dos relatorios para uma unica pagina A4 em modo paisagem.
+- Reduzidos fontes, margens, indicadores, graficos e tabela somente na impressao/PDF.
+- Ocultados mapa, fila, filtros operacionais e demais partes do painel no PDF.
+- Separada a sessao local de demonstracao da sessao normal do painel.
+
+2026-06-25
+- Definido o escopo inicial com o usuario.
+- Definido o nome ClickCidade.
+- Definido o modelo GitHub Pages + Google Apps Script + Google Sheets + Google Drive.
+- Removido o prototipo local Node.js iniciado anteriormente.
+- Criada a estrutura local em D:\fotodenuncia.
+- Copiada a base territorial do ACE para assets\carmo-territorios-data.js.
+- Criados os arquivos de manutencao obrigatorios: api.txt e ROTEIRO_CLICKCIDADE.txt.
+- Criadas as paginas index.html e painel.html.
+- Criados assets\runtime-config.js, assets\styles.css, assets\app.js e assets\painel.js.
+- Criado apps-script\Code.gs com API para Google Sheets/Drive.
+- Gerada a copia api.txt a partir de apps-script\Code.gs.
+- Ajustado o backend para priorizar SpreadsheetApp.getActiveSpreadsheet(), criando as abas na propria planilha onde o Apps Script estiver rodando.
+- Validada a sintaxe de assets\app.js, assets\painel.js, assets\runtime-config.js e apps-script\Code.gs.
+- Testado carregamento local de index.html e painel.html em http://127.0.0.1:4173.
+- Confirmado que o painel abre em modo demonstracao, aceita login local e carrega o mapa Leaflet sem erros de console.
+- Corrigido CSS global de elementos hidden: adicionada regra [hidden]{display:none!important;} porque a tela de login continuava visivel sobre o painel apos entrar.
+- Configurada a URL do Apps Script em assets\runtime-config.js:
+  https://script.google.com/macros/s/AKfycbz4oa5pJifdyHJU_6ywWRGaupbkiIWx7m0uIAVJ83W8fdKEGP1aV2zJliKWit7rmeEYqg/exec
+- Regenerado api.txt a partir de apps-script\Code.gs e colocado o conteudo na area de transferencia para colar novamente no Apps Script.
+- Adicionada a funcao ClickCidade_configurarInicial(), que cria/verifica as abas, cria a pasta de fotos se faltar e configura a senha inicial do painel.
+- Desfeita a alteracao solicitada depois: removidos os atalhos criarPlanilhas(), criarAbas() e o menu onOpen().
+- Removida a senha fixa do codigo antes de publicar no GitHub. A senha inicial agora e gerada automaticamente por ClickCidade_configurarInicial().
+- Criado repositorio separado no GitHub: https://github.com/acecarmorj/fotodenuncia
+- Publicado commit inicial no repositorio acecarmorj/fotodenuncia, branch main.
+- GitHub Pages habilitado a partir da branch main, pasta raiz.
+- Endereco publico esperado: https://acecarmorj.github.io/fotodenuncia/
+
+Proximos passos
+---------------
+1. Colar o api.txt atualizado no Google Apps Script e publicar uma nova versao.
+2. Limpar as linhas de teste da aba Denuncias antes do uso oficial.
+3. Testar um envio real, uma atualizacao e uma resolucao com e sem foto final.
+4. Revisar com o usuario e somente depois atualizar o GitHub.

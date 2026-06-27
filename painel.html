@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#12382a">
-  <title>Painel CarmoCuida</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQX82I5nQL1YcXRaA3j47nJX9A2X+Z8=" crossorigin="">
-  <link rel="stylesheet" href="./assets/styles.css">
+  <meta name="theme-color" content="#263238">
+  <title>Painel ClickCidade</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="./assets/styles.css?v=20260626-atendimento">
 </head>
 <body class="panel-page">
   <div class="login-screen" id="loginScreen">
     <form class="login-box" id="loginForm">
-      <span class="brand-mark">CC</span>
-      <h1>CarmoCuida</h1>
+      <span class="brand-mark" aria-label="ClickCidade"></span>
+      <h1>ClickCidade</h1>
       <label class="field-label" for="passwordInput">Senha do painel</label>
       <input id="passwordInput" type="password" autocomplete="current-password" required>
       <button class="primary-button" type="submit">Entrar</button>
@@ -23,9 +23,9 @@
   <div class="panel-shell" id="panelShell" hidden>
     <aside class="panel-sidebar">
       <div class="panel-brand">
-        <span class="brand-mark">CC</span>
+        <span class="brand-mark" aria-label="ClickCidade"></span>
         <div>
-          <strong>CarmoCuida</strong>
+          <strong>ClickCidade</strong>
           <small>Painel de denuncias</small>
         </div>
       </div>
@@ -33,6 +33,7 @@
         <button class="nav-button is-active" type="button" data-focus-section="overview">Resumo</button>
         <button class="nav-button" type="button" data-focus-section="mapPanel">Mapa</button>
         <button class="nav-button" type="button" data-focus-section="listPanel">Denuncias</button>
+        <button class="nav-button" type="button" data-focus-section="reportsPanel">Relatorios</button>
       </nav>
       <button class="secondary-button" type="button" id="logoutButton">Sair</button>
     </aside>
@@ -54,6 +55,17 @@
         <article class="stat-card"><span>Novas</span><strong id="statNew">0</strong></article>
         <article class="stat-card"><span>Dengue</span><strong id="statDengue">0</strong></article>
         <article class="stat-card"><span>Sem GPS</span><strong id="statNoGps">0</strong></article>
+      </section>
+
+      <section class="attention-section" id="attentionPanel">
+        <div class="attention-head">
+          <div>
+            <span class="section-label">Atencao</span>
+            <h2>Fila de prioridade</h2>
+          </div>
+          <p id="attentionSummary">Nenhum atendimento pendente.</p>
+        </div>
+        <div class="attention-list" id="attentionList"></div>
       </section>
 
       <section class="filters-card">
@@ -97,9 +109,16 @@
               <h2>Mapa territorial</h2>
               <p id="mapSummary">Base territorial do ACE com denuncias sobrepostas.</p>
             </div>
-            <div class="map-toggles">
-              <button class="toggle-button is-on" type="button" data-map-layer="territories">Territorios</button>
-              <button class="toggle-button is-on" type="button" data-map-layer="heat">Calor</button>
+            <div class="map-controls">
+              <div class="map-style-switcher" aria-label="Tipo de mapa">
+                <button class="map-style-button is-active" type="button" data-map-base="streets">Ruas</button>
+                <button class="map-style-button" type="button" data-map-base="terrain">Relevo</button>
+                <button class="map-style-button" type="button" data-map-base="satellite">Satelite</button>
+              </div>
+              <div class="map-toggles">
+                <button class="toggle-button is-on" type="button" data-map-layer="territories">Territorios</button>
+                <button class="toggle-button is-on" type="button" data-map-layer="heat">Calor</button>
+              </div>
             </div>
           </div>
           <div id="reportMap" class="report-map"></div>
@@ -126,13 +145,134 @@
           <div class="detail-content" id="detailContent" hidden></div>
         </article>
       </section>
+
+      <section class="reports-section" id="reportsPanel">
+        <header class="reports-head">
+          <div>
+            <span class="section-label">Relatorios</span>
+            <h2>Visao gerencial</h2>
+            <p id="reportSummary">Indicadores consolidados das denuncias recebidas.</p>
+          </div>
+          <div class="report-actions">
+            <button class="secondary-button" type="button" id="exportReportButton">Exportar relatorio</button>
+            <button class="primary-button" type="button" id="printReportButton">Imprimir / PDF</button>
+          </div>
+        </header>
+
+        <div class="report-filters">
+          <label>
+            Periodo
+            <select id="reportPeriod">
+              <option value="all">Todo o periodo</option>
+              <option value="today">Hoje</option>
+              <option value="7">Ultimos 7 dias</option>
+              <option value="30" selected>Ultimos 30 dias</option>
+              <option value="90">Ultimos 90 dias</option>
+              <option value="custom">Periodo personalizado</option>
+            </select>
+          </label>
+          <label>
+            Tipo
+            <select id="reportCategory">
+              <option value="">Todos</option>
+              <option value="lixo">Lixo</option>
+              <option value="dengue">Foco de dengue</option>
+              <option value="terreno">Terreno baldio</option>
+            </select>
+          </label>
+          <label>
+            Territorio
+            <select id="reportTerritory">
+              <option value="">Todos</option>
+            </select>
+          </label>
+          <div class="report-custom-dates" id="reportCustomDates" hidden>
+            <label>
+              Data inicial
+              <input id="reportStartDate" type="date">
+            </label>
+            <label>
+              Data final
+              <input id="reportEndDate" type="date">
+            </label>
+          </div>
+        </div>
+
+        <div class="report-kpis">
+          <article class="report-kpi">
+            <span>Recebidas</span>
+            <strong id="reportTotal">0</strong>
+            <small>No periodo selecionado</small>
+          </article>
+          <article class="report-kpi">
+            <span>Em aberto</span>
+            <strong id="reportOpen">0</strong>
+            <small>Aguardando conclusao</small>
+          </article>
+          <article class="report-kpi">
+            <span>Resolvidas</span>
+            <strong id="reportResolved">0</strong>
+            <small>Atendimento concluido</small>
+          </article>
+          <article class="report-kpi">
+            <span>Taxa de resolucao</span>
+            <strong id="reportResolutionRate">0%</strong>
+            <small>Resolvidas sobre o total</small>
+          </article>
+          <article class="report-kpi">
+            <span>Tempo medio</span>
+            <strong id="reportAverageTime">-</strong>
+            <small>Do recebimento a resolucao</small>
+          </article>
+        </div>
+
+        <div class="report-grid">
+          <article class="report-panel">
+            <div class="report-panel-head">
+              <h3>Denuncias por tipo</h3>
+              <span id="reportCategoryTotal">0 registros</span>
+            </div>
+            <div class="report-bars" id="reportCategoryBars"></div>
+          </article>
+
+          <article class="report-panel">
+            <div class="report-panel-head">
+              <h3>Situacao dos atendimentos</h3>
+              <span id="reportStatusTotal">0 registros</span>
+            </div>
+            <div class="report-bars" id="reportStatusBars"></div>
+          </article>
+
+          <article class="report-panel report-territories">
+            <div class="report-panel-head">
+              <h3>Resumo por territorio</h3>
+              <span id="reportTerritoryTotal">0 territorios</span>
+            </div>
+            <div class="report-table-wrap">
+              <table class="report-table">
+                <thead>
+                  <tr>
+                    <th>Territorio</th>
+                    <th>Total</th>
+                    <th>Novas</th>
+                    <th>Em aberto</th>
+                    <th>Resolvidas</th>
+                    <th>Dengue</th>
+                  </tr>
+                </thead>
+                <tbody id="reportTerritoryRows"></tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+      </section>
     </main>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js" integrity="sha256-65UqrlgGoRAnKfKRuriH3eeDrOhZgZo1SCenduc+SGo=" crossorigin=""></script>
-  <script src="./assets/runtime-config.js"></script>
+  <script src="./assets/runtime-config.js?v=20260626-atendimento"></script>
   <script src="./assets/carmo-territorios-data.js"></script>
-  <script src="./assets/painel.js"></script>
+  <script src="./assets/painel.js?v=20260626-atendimento"></script>
 </body>
 </html>
