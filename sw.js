@@ -1,11 +1,11 @@
-var CACHE_NAME = "clickcidade-20260628-ux-operacao-r3";
+var CACHE_NAME = "clickcidade-20260628-logo-carmo-r4";
 var APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "./assets/styles.css?v=20260628-ux-operacao-r3",
-  "./assets/runtime-config.js?v=20260628-ux-operacao-r3",
-  "./assets/app.js?v=20260628-ux-operacao-r3",
+  "./assets/styles.css?v=20260628-logo-carmo-r4",
+  "./assets/runtime-config.js?v=20260628-logo-carmo-r4",
+  "./assets/app.js?v=20260628-logo-carmo-r4",
   "./assets/clickcidade-logo.png",
   "./assets/clickcidade-mobile-logo.png",
   "./assets/clickcidade-app-icon.png"

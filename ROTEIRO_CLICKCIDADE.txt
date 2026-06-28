@@ -60,6 +60,10 @@ Arquivos de manutencao obrigatorios
 Historico
 ---------
 2026-06-28
+- Atualizada toda a identidade de logo com a paisagem real de Carmo em estilo semi-realista.
+- Aplicada a nova logo horizontal no formulario e nos arquivos gerais de marca.
+- Aplicado o novo pin quadrado no painel, login e icone instalavel.
+- Atualizado o cache visual para a versao 20260628-logo-carmo-r4.
 - Revisada a versao de UX e operacao recebida em F:\fotodenuncia.
 - Mantido no painel o resumo operacional com Novas, Em andamento, Atrasadas e Resolvidas.
 - Mantidos o atalho de Prioridade e as etiquetas de status na lista de denuncias.
