@@ -108,6 +108,8 @@ https://usuario.github.io/repositorio/painel.html
 - O painel usa login simples com senha validada no Apps Script.
 - A tela do cidadao nao exige cadastro.
 - Nome e telefone do cidadao sao opcionais.
+- A localizacao por GPS e obrigatoria para enviar uma denuncia.
+- A referencia do local e opcional e serve apenas como complemento.
 - A foto de conclusao no painel tambem e opcional.
 - O formulario pode ser instalado no celular quando o navegador mostrar a opcao.
 - Antes do uso oficial, apague somente as linhas de teste da aba Denuncias e mantenha o cabecalho.

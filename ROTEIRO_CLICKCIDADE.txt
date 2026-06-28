@@ -23,7 +23,7 @@ Decisoes combinadas
 14. Tipos de denuncia: Lixo, Foco de dengue, Terreno baldio.
 15. Telefone do cidadao: opcional.
 15.1. Nome do cidadao: opcional.
-16. Localizacao: usar GPS; se negar GPS, permitir referencia e marcar como sem GPS confirmado.
+16. Localizacao: GPS obrigatorio para enviar; a referencia e apenas complementar.
 17. Status: Nova, Em triagem, Encaminhada, Em vistoria, Resolvida, Improcedente.
 18. Mapa: usar inicialmente a base territorial pronta do ACE em D:\ACE-FINAL\assets\carmo-territorios-data.js.
 19. O Apps Script deve criar as abas na mesma planilha em que estiver sendo executado.
@@ -44,12 +44,26 @@ Arquivos de manutencao obrigatorios
 
 Historico
 ---------
+2026-06-28
+- A identidade visual foi redesenhada do zero para um resultado mais profissional.
+- Novo simbolo: marcador laranja com montanha azul, cidade baixa branca e morros verdes.
+- Novo nome horizontal: Click em grafite e Cidade em laranja, sem letras deformadas.
+- O simbolo final foi aplicado ao painel, login e icone instalavel.
+- O logo horizontal final foi aplicado ao cabecalho do celular.
+
 2026-06-27
 - Diferenciadas as cores dos pontos do mapa por tipo de denuncia.
 - Definidas as cores: lixo laranja, foco de dengue vermelho e terreno baldio marrom-terra.
 - O efeito de calor passou a usar uma camada separada para cada tipo, preservando as cores.
 - Adicionada legenda dos tipos de denuncia dentro do mapa.
 - Atualizada a cor de terreno baldio nas etiquetas e graficos para marrom-terra.
+- GPS definido como obrigatorio no formulario do cidadao e na validacao da API.
+- A referencia do local permanece opcional e nao substitui mais as coordenadas.
+- Indicadores do topo alterados para Total, Lixo, Dengue e Terreno baldio.
+- Botoes de foto e GPS do formulario receberam fundo laranja e texto branco para maior destaque.
+- Criado e aplicado um logo horizontal exclusivo para o cabecalho do celular.
+- O primeiro C de ClickCidade forma o contorno laranja do marcador GPS e enquadra a foto da cidade.
+- Mantidos o logo atual no painel e o icone atual do aplicativo.
 
 2026-06-26
 - Nome do sistema alterado de CarmoCuida para ClickCidade.

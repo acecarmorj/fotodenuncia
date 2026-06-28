@@ -147,7 +147,7 @@
     $("reportForm").reset();
     $("photoPreview").hidden = true;
     $("photoPreview").removeAttribute("src");
-    $("locationStatus").textContent = "Aguardando GPS.";
+    $("locationStatus").textContent = "Toque em Usar GPS para confirmar o local.";
     state.photoDataUrl = "";
     state.photoName = "";
     state.photoMime = "";
@@ -241,8 +241,8 @@
       return;
     }
 
-    if (!state.location && reference.length < 4) {
-      setMessage("Use o GPS ou informe uma referencia.", "error");
+    if (!state.location) {
+      setMessage("Confirme a localizacao pelo GPS antes de enviar.", "error");
       return;
     }
 

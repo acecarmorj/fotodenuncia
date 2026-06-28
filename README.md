@@ -39,6 +39,7 @@ Nunca coloque senha real dentro dos arquivos do GitHub.
 ## Recursos atuais
 
 - Identificacao e telefone opcionais.
+- Localizacao por GPS obrigatoria.
 - Comprovante com protocolo para o cidadao.
 - Mapa em ruas, relevo ou satelite.
 - Fila de prioridade, prazos e tempo aberto.

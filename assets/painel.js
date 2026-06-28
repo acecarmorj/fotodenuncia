@@ -291,9 +291,9 @@
   function buildStats(reports) {
     return {
       total: reports.length,
-      newCount: reports.filter(function (item) { return item.status === "nova"; }).length,
+      trash: reports.filter(function (item) { return item.category === "lixo"; }).length,
       dengue: reports.filter(function (item) { return item.category === "dengue"; }).length,
-      noGps: reports.filter(function (item) { return !(item.latitude && item.longitude); }).length
+      land: reports.filter(function (item) { return item.category === "terreno"; }).length
     };
   }
 
@@ -454,9 +454,9 @@
   function renderStats() {
     var stats = buildStats(state.reports);
     $("statTotal").textContent = stats.total;
-    $("statNew").textContent = stats.newCount;
+    $("statTrash").textContent = stats.trash;
     $("statDengue").textContent = stats.dengue;
-    $("statNoGps").textContent = stats.noGps;
+    $("statLand").textContent = stats.land;
     $("listSummary").textContent = state.filtered.length + " de " + state.reports.length + " denuncias";
     $("mapSummary").textContent = state.filtered.filter(function (item) { return item.latitude && item.longitude; }).length + " pontos com GPS no mapa.";
   }

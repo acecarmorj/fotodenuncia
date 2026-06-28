@@ -9,17 +9,16 @@
   <title>ClickCidade</title>
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="apple-touch-icon" href="./assets/clickcidade-app-icon.png">
-  <link rel="stylesheet" href="./assets/styles.css?v=20260627-map-colors">
+  <link rel="stylesheet" href="./assets/styles.css?v=20260628-final-logo">
 </head>
 <body class="citizen-page">
   <main class="citizen-shell">
     <header class="citizen-header">
-      <div>
-        <span class="brand-mark" aria-label="ClickCidade"></span>
-        <h1>ClickCidade</h1>
-        <p>FotoDenuncia de lixo, foco de dengue e terreno baldio.</p>
-        <button class="secondary-button install-button" type="button" id="installButton" hidden>Instalar ClickCidade</button>
+      <div class="mobile-logo-frame">
+        <img class="citizen-mobile-logo" src="./assets/clickcidade-mobile-logo.png" alt="ClickCidade - FotoDenuncia">
       </div>
+      <h1 class="visually-hidden">ClickCidade</h1>
+      <button class="secondary-button install-button" type="button" id="installButton" hidden>Instalar ClickCidade</button>
     </header>
 
     <form class="citizen-form" id="reportForm">
@@ -51,12 +50,12 @@
       <section class="citizen-card">
         <div class="location-row">
           <div>
-            <span class="field-label">Localizacao</span>
-            <p id="locationStatus">Aguardando GPS.</p>
+            <span class="field-label">Localizacao obrigatoria</span>
+            <p id="locationStatus">Toque em Usar GPS para confirmar o local.</p>
           </div>
           <button class="secondary-button" type="button" id="locationButton">Usar GPS</button>
         </div>
-        <label class="field-label small-label" for="referenceInput">Referencia, se precisar</label>
+        <label class="field-label small-label" for="referenceInput">Referencia opcional</label>
         <textarea id="referenceInput" rows="2" maxlength="240" placeholder="Ex.: perto da escola, rua, bairro ou ponto conhecido"></textarea>
       </section>
 
@@ -85,7 +84,7 @@
     </section>
   </main>
 
-  <script src="./assets/runtime-config.js?v=20260627-map-colors"></script>
-  <script src="./assets/app.js?v=20260627-map-colors"></script>
+  <script src="./assets/runtime-config.js?v=20260628-final-logo"></script>
+  <script src="./assets/app.js?v=20260628-final-logo"></script>
 </body>
 </html>

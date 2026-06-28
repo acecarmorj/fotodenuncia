@@ -15,7 +15,7 @@
 
 var CLICKCIDADE = {
   APP_NAME: 'ClickCidade',
-  VERSION: '20260626-atendimento',
+  VERSION: '20260627-gps-required',
   SHEETS: {
     CONFIG: 'Config',
     REPORTS: 'Denuncias',
@@ -225,8 +225,8 @@ function createReport_(payload) {
   var accuracy = normalizeNumber_(payload.accuracy);
   var hasGps = lat !== '' && lng !== '';
 
-  if (!hasGps && reference.length < 4) {
-    throw new Error('Informe GPS ou uma referencia.');
+  if (!hasGps) {
+    throw new Error('Confirme a localizacao pelo GPS antes de enviar.');
   }
 
   var photo = savePhoto_(payload.photoDataUrl, payload.photoName, payload.photoMime);
@@ -574,9 +574,9 @@ function normalizeReportRow_(row) {
 function buildStatsFromReports_(reports) {
   return {
     total: reports.length,
-    novas: reports.filter(function(row) { return row.status === 'nova'; }).length,
+    lixo: reports.filter(function(row) { return row.category === 'lixo'; }).length,
     dengue: reports.filter(function(row) { return row.category === 'dengue'; }).length,
-    semGps: reports.filter(function(row) { return !(row.latitude && row.longitude); }).length
+    terreno: reports.filter(function(row) { return row.category === 'terreno'; }).length
   };
 }
 
