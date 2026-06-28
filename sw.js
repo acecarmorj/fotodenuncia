@@ -1,11 +1,11 @@
-var CACHE_NAME = "clickcidade-20260626-atendimento";
+var CACHE_NAME = "clickcidade-20260627-map-colors";
 var APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "./assets/styles.css?v=20260626-atendimento",
-  "./assets/runtime-config.js?v=20260626-atendimento",
-  "./assets/app.js?v=20260626-atendimento",
+  "./assets/styles.css?v=20260627-map-colors",
+  "./assets/runtime-config.js?v=20260627-map-colors",
+  "./assets/app.js?v=20260627-map-colors",
   "./assets/clickcidade-logo.png",
   "./assets/clickcidade-app-icon.png"
 ];

@@ -17,9 +17,9 @@
   };
   var statusOrder = ["nova", "triagem", "encaminhada", "vistoria", "resolvida", "improcedente"];
   var categoryColors = {
-    lixo: "#d88a16",
-    dengue: "#c43d35",
-    terreno: "#2e6f95"
+    lixo: "#e67e22",
+    dengue: "#d63c32",
+    terreno: "#79513a"
   };
   var statusColors = {
     nova: "#c43d35",
@@ -716,6 +716,18 @@
     switchBaseLayer(state.activeBaseKey);
     state.markerLayer = L.layerGroup().addTo(state.map);
     state.territoryLayer = L.layerGroup().addTo(state.map);
+    var legend = L.control({ position: "bottomleft" });
+    legend.onAdd = function () {
+      var container = L.DomUtil.create("div", "map-category-legend");
+      container.innerHTML =
+        "<strong>Tipos de denuncia</strong>" +
+        "<span><i style=\"background:" + categoryColors.lixo + "\"></i>Lixo</span>" +
+        "<span><i style=\"background:" + categoryColors.dengue + "\"></i>Foco de dengue</span>" +
+        "<span><i style=\"background:" + categoryColors.terreno + "\"></i>Terreno baldio</span>";
+      L.DomEvent.disableClickPropagation(container);
+      return container;
+    };
+    legend.addTo(state.map);
   }
 
   function switchBaseLayer(key) {
@@ -763,17 +775,21 @@
     }
 
     var bounds = [];
-    var heatPoints = [];
+    var heatPoints = {
+      lixo: [],
+      dengue: [],
+      terreno: []
+    };
     state.filtered.forEach(function (report) {
       if (!(report.latitude && report.longitude)) { return; }
       var latlng = [Number(report.latitude), Number(report.longitude)];
       bounds.push(latlng);
-      heatPoints.push([latlng[0], latlng[1], report.category === "dengue" ? 1.4 : .8]);
+      heatPoints[report.category].push([latlng[0], latlng[1], report.category === "dengue" ? 1.3 : .9]);
       var marker = L.circleMarker(latlng, {
         radius: report.category === "dengue" ? 8 : 7,
         color: "#ffffff",
         weight: 2,
-        fillColor: statusColors[report.status] || categoryColors[report.category],
+        fillColor: categoryColors[report.category],
         fillOpacity: .92
       });
       marker.bindPopup(
@@ -792,19 +808,35 @@
       marker.addTo(state.markerLayer);
     });
 
-    if (state.layerState.heat && window.L && typeof L.heatLayer === "function" && heatPoints.length) {
-      state.heatLayer = L.heatLayer(heatPoints, {
-        radius: 32,
-        blur: 24,
-        maxZoom: 16,
-        minOpacity: .22,
-        gradient: {
-          .2: "rgba(255,244,214,.20)",
-          .55: "rgba(246,173,85,.42)",
-          .82: "rgba(226,83,70,.70)",
-          1: "rgba(127,29,29,.92)"
+    if (state.layerState.heat && window.L && typeof L.heatLayer === "function") {
+      var heatGradients = {
+        lixo: {
+          .25: "rgba(255,239,205,.16)",
+          .65: "rgba(242,165,76,.38)",
+          1: "rgba(230,126,34,.72)"
+        },
+        dengue: {
+          .25: "rgba(255,223,218,.16)",
+          .65: "rgba(230,104,91,.40)",
+          1: "rgba(214,60,50,.76)"
+        },
+        terreno: {
+          .25: "rgba(235,223,214,.16)",
+          .65: "rgba(164,111,77,.38)",
+          1: "rgba(121,81,58,.74)"
         }
-      }).addTo(state.map);
+      };
+      state.heatLayer = L.layerGroup().addTo(state.map);
+      Object.keys(heatPoints).forEach(function (category) {
+        if (!heatPoints[category].length) { return; }
+        L.heatLayer(heatPoints[category], {
+          radius: 29,
+          blur: 21,
+          maxZoom: 16,
+          minOpacity: .16,
+          gradient: heatGradients[category]
+        }).addTo(state.heatLayer);
+      });
     }
 
     if (bounds.length && !state.map._clickCidadeHadFit) {

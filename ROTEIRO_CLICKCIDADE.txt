@@ -44,6 +44,13 @@ Arquivos de manutencao obrigatorios
 
 Historico
 ---------
+2026-06-27
+- Diferenciadas as cores dos pontos do mapa por tipo de denuncia.
+- Definidas as cores: lixo laranja, foco de dengue vermelho e terreno baldio marrom-terra.
+- O efeito de calor passou a usar uma camada separada para cada tipo, preservando as cores.
+- Adicionada legenda dos tipos de denuncia dentro do mapa.
+- Atualizada a cor de terreno baldio nas etiquetas e graficos para marrom-terra.
+
 2026-06-26
 - Nome do sistema alterado de CarmoCuida para ClickCidade.
 - Renomeados textos, configuracoes, arquivos de manutencao, funcoes da API, chaves locais e prefixos dos novos protocolos.

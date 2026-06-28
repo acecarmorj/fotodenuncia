@@ -68,7 +68,7 @@ button:disabled {
   border: 2px solid #fff;
   border-radius: 50%;
   background-color: #fff;
-  background-image: url("./clickcidade-logo.png?v=20260626-atendimento");
+  background-image: url("./clickcidade-logo.png?v=20260627-map-colors");
   background-position: -21px -32px;
   background-repeat: no-repeat;
   background-size: 220px auto;
@@ -915,8 +915,8 @@ a.secondary-button {
 }
 
 .pill.terreno {
-  background: var(--blue-soft);
-  color: #195571;
+  background: #efe2da;
+  color: #5a3828;
 }
 
 .status-pill {
@@ -1439,13 +1439,50 @@ a.secondary-button {
     justify-content: flex-start;
   }
 
-  .report-map {
+.report-map {
     min-height: 0;
   }
 
   .location-row {
     grid-template-columns: 1fr;
   }
+}
+
+.map-category-legend {
+  display: grid;
+  gap: 5px;
+  min-width: 142px;
+  border: 1px solid rgba(38, 50, 56, .22);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, .94);
+  padding: 8px 10px;
+  box-shadow: 0 4px 14px rgba(38, 50, 56, .14);
+  color: var(--ink);
+  font-size: 11px;
+}
+
+.map-category-legend strong,
+.map-category-legend span {
+  display: flex;
+  align-items: center;
+}
+
+.map-category-legend strong {
+  margin-bottom: 1px;
+  font-size: 11px;
+}
+
+.map-category-legend span {
+  gap: 6px;
+  font-weight: 750;
+}
+
+.map-category-legend i {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 10px;
+  border: 1px solid rgba(0, 0, 0, .14);
+  border-radius: 50%;
 }
 
 @media print {
