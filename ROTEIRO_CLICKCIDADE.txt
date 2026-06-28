@@ -50,6 +50,8 @@ Historico
 - Novo nome horizontal: Click em grafite e Cidade em laranja, sem letras deformadas.
 - O simbolo final foi aplicado ao painel, login e icone instalavel.
 - O logo horizontal final foi aplicado ao cabecalho do celular.
+- Padronizados os campos como Nome (opcional), Referencia (opcional) e WhatsApp (opcional).
+- Telefone passou a ser apresentado como WhatsApp na busca, detalhes e exportacao do painel.
 
 2026-06-27
 - Diferenciadas as cores dos pontos do mapa por tipo de denuncia.

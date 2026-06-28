@@ -887,7 +887,7 @@
         metaBox("Tempo aberto", isOpen(report) ? ageInDays(report) + (ageInDays(report) === 1 ? " dia" : " dias") : "Concluida") +
         metaBox("Territorio", report.territory || "-") +
         metaBox("Nome", report.citizenName || "-") +
-        metaBox("Telefone", report.phone || "-") +
+        metaBox("WhatsApp", report.phone || "-") +
         metaBox("GPS", report.latitude && report.longitude ? report.latitude + ", " + report.longitude : "Sem GPS confirmado") +
         (report.resolvedAt ? metaBox("Resolvida em", formatDate(report.resolvedAt)) : "") +
       "</div>" +
@@ -1139,7 +1139,7 @@
       "prioridade",
       "territorio",
       "nome",
-      "telefone",
+      "whatsapp",
       "referencia",
       "latitude",
       "longitude",
