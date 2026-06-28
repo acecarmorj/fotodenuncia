@@ -9,29 +9,37 @@
   <title>ClickCidade</title>
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="apple-touch-icon" href="./assets/clickcidade-app-icon.png">
-  <link rel="stylesheet" href="./assets/styles.css?v=20260628-optional-labels">
+  <link rel="stylesheet" href="./assets/styles.css?v=20260628-ux-operacao-r3">
 </head>
 <body class="citizen-page">
   <main class="citizen-shell">
     <header class="citizen-header">
       <div class="mobile-logo-frame">
-        <img class="citizen-mobile-logo" src="./assets/clickcidade-mobile-logo.png" alt="ClickCidade - FotoDenuncia">
+        <img class="citizen-mobile-logo" src="./assets/clickcidade-mobile-logo.png" alt="ClickCidade - FotoDenúncia">
       </div>
       <h1 class="visually-hidden">ClickCidade</h1>
       <button class="secondary-button install-button" type="button" id="installButton" hidden>Instalar ClickCidade</button>
     </header>
 
     <form class="citizen-form" id="reportForm">
-      <section class="citizen-card">
-        <label class="field-label" for="photoInput">Foto</label>
-        <input id="photoInput" class="file-input" type="file" accept="image/*" capture="environment" required>
-        <button class="photo-button" type="button" id="photoButton">Tirar ou escolher foto</button>
-        <img class="photo-preview" id="photoPreview" alt="Previa da denuncia" hidden>
+      <section class="citizen-guide" aria-label="Etapas para enviar">
+        <div class="guide-steps">
+          <span><strong>1</strong> Foto</span>
+          <span><strong>2</strong> Tipo</span>
+          <span><strong>3</strong> GPS</span>
+        </div>
       </section>
 
       <section class="citizen-card">
-        <span class="field-label">Tipo</span>
-        <div class="type-grid" role="radiogroup" aria-label="Tipo da denuncia">
+        <label class="field-label" for="photoInput">Foto da situação</label>
+        <input id="photoInput" class="file-input" type="file" accept="image/*" capture="environment" required>
+        <button class="photo-button" type="button" id="photoButton">Tirar ou escolher foto</button>
+        <img class="photo-preview" id="photoPreview" alt="Prévia da denúncia" hidden>
+      </section>
+
+      <section class="citizen-card">
+        <span class="field-label">Tipo de denúncia</span>
+        <div class="type-grid" role="radiogroup" aria-label="Tipo da denúncia">
           <label class="type-option">
             <input type="radio" name="category" value="lixo" checked>
             <span>Lixo</span>
@@ -50,41 +58,47 @@
       <section class="citizen-card">
         <div class="location-row">
           <div>
-            <span class="field-label">Localizacao obrigatoria</span>
-            <p id="locationStatus">Toque em Usar GPS para confirmar o local.</p>
+            <span class="field-label">Localização por GPS (obrigatória)</span>
+            <p id="locationStatus">Toque em Usar GPS e permita o acesso à localização do aparelho.</p>
           </div>
           <button class="secondary-button" type="button" id="locationButton">Usar GPS</button>
         </div>
-        <label class="field-label small-label" for="referenceInput">Referencia (opcional)</label>
+        <label class="field-label small-label" for="referenceInput">Referência do local (opcional)</label>
         <textarea id="referenceInput" rows="2" maxlength="240" placeholder="Ex.: perto da escola, rua, bairro ou ponto conhecido"></textarea>
+        <p class="field-help">A referência ajuda a equipe, mas não substitui a localização por GPS.</p>
       </section>
 
       <section class="citizen-card">
         <label class="field-label" for="citizenNameInput">Nome (opcional)</label>
-        <input id="citizenNameInput" type="text" maxlength="120" autocomplete="name" placeholder="Como podemos chamar voce?">
+        <input id="citizenNameInput" type="text" maxlength="120" autocomplete="name" placeholder="Como podemos chamar você?">
         <label class="field-label" for="phoneInput">WhatsApp (opcional)</label>
         <input id="phoneInput" type="tel" maxlength="40" inputmode="tel" placeholder="(22) 99999-9999">
       </section>
 
-      <button class="primary-button submit-button" type="submit" id="submitButton">Enviar denuncia</button>
+      <details class="privacy-note">
+        <summary>Privacidade e cuidado com a foto</summary>
+        <p>A foto, a localização e a referência são usadas para identificar o ponto informado e organizar o atendimento. Evite fotografar pessoas, documentos, placas de veículos ou áreas internas de residências.</p>
+      </details>
+
+      <button class="primary-button submit-button" type="submit" id="submitButton">Enviar denúncia</button>
       <p class="form-message" id="formMessage" role="status"></p>
     </form>
 
     <section class="citizen-receipt" id="receiptPanel" aria-live="polite" hidden>
       <span class="receipt-check" aria-hidden="true">&#10003;</span>
-      <p class="receipt-eyebrow">Denuncia recebida</p>
+      <p class="receipt-eyebrow">Denúncia recebida</p>
       <h2 id="receiptProtocol"></h2>
       <p id="receiptDate"></p>
       <p class="receipt-note">Guarde este protocolo para acompanhar o atendimento.</p>
       <div class="receipt-actions">
         <button class="primary-button" type="button" id="shareReceiptButton">Compartilhar protocolo</button>
-        <button class="secondary-button" type="button" id="newReportButton">Fazer outra denuncia</button>
+        <button class="secondary-button" type="button" id="newReportButton">Fazer outra denúncia</button>
       </div>
       <p class="form-message" id="receiptMessage" role="status"></p>
     </section>
   </main>
 
-  <script src="./assets/runtime-config.js?v=20260628-optional-labels"></script>
-  <script src="./assets/app.js?v=20260628-optional-labels"></script>
+  <script src="./assets/runtime-config.js?v=20260628-ux-operacao-r3"></script>
+  <script src="./assets/app.js?v=20260628-ux-operacao-r3"></script>
 </body>
 </html>

@@ -79,10 +79,10 @@
   function resizeImage(file) {
     return new Promise(function (resolve, reject) {
       var reader = new FileReader();
-      reader.onerror = function () { reject(new Error("Nao foi possivel ler a foto.")); };
+      reader.onerror = function () { reject(new Error("Não foi possível ler a foto.")); };
       reader.onload = function () {
         var image = new Image();
-        image.onerror = function () { reject(new Error("Foto invalida.")); };
+        image.onerror = function () { reject(new Error("Foto inválida.")); };
         image.onload = function () {
           var maxSide = 1600;
           var scale = Math.min(1, maxSide / Math.max(image.width, image.height));
@@ -122,20 +122,20 @@
   function requestLocation() {
     var status = $("locationStatus");
     if (!navigator.geolocation) {
-      status.textContent = "GPS indisponivel neste aparelho.";
+      status.textContent = "GPS indisponível neste aparelho. Tente novamente em outro navegador ou aparelho.";
       return;
     }
-    status.textContent = "Buscando localizacao...";
+    status.textContent = "Buscando localização. Mantenha esta tela aberta e autorize o GPS se o navegador solicitar.";
     navigator.geolocation.getCurrentPosition(function (position) {
       state.location = {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
         accuracy: position.coords.accuracy
       };
-      status.textContent = "GPS confirmado com precisao aproximada de " + Math.round(position.coords.accuracy || 0) + " m.";
+      status.textContent = "GPS confirmado com precisão aproximada de " + Math.round(position.coords.accuracy || 0) + " m.";
     }, function () {
       state.location = null;
-      status.textContent = "GPS nao confirmado. Use uma referencia.";
+      status.textContent = "GPS não confirmado. Ative a localização do aparelho, permita o acesso no navegador e toque novamente em Usar GPS.";
     }, {
       enableHighAccuracy: true,
       timeout: 12000,
@@ -147,7 +147,7 @@
     $("reportForm").reset();
     $("photoPreview").hidden = true;
     $("photoPreview").removeAttribute("src");
-    $("locationStatus").textContent = "Toque em Usar GPS para confirmar o local.";
+    $("locationStatus").textContent = "Toque em Usar GPS e permita o acesso à localização do aparelho.";
     state.photoDataUrl = "";
     state.photoName = "";
     state.photoMime = "";
@@ -199,7 +199,7 @@
       $("receiptMessage").textContent = navigator.share ? "Protocolo compartilhado." : "Protocolo copiado.";
     }).catch(function (error) {
       if (!error || error.name !== "AbortError") {
-        $("receiptMessage").textContent = "Nao foi possivel compartilhar agora.";
+        $("receiptMessage").textContent = "Não foi possível compartilhar agora.";
       }
     });
   }
@@ -242,12 +242,12 @@
     }
 
     if (!state.location) {
-      setMessage("Confirme a localizacao pelo GPS antes de enviar.", "error");
+      setMessage("Confirme a localização pelo GPS antes de enviar.", "error");
       return;
     }
 
     submit.disabled = true;
-    setMessage("Enviando denuncia...");
+    setMessage("Enviando denúncia...");
 
     postApi({
       action: "create_report",
@@ -264,7 +264,7 @@
       userAgent: navigator.userAgent || ""
     }).then(function (result) {
       if (!result || !result.ok) {
-        throw new Error((result && result.error) || "Nao foi possivel enviar.");
+        throw new Error((result && result.error) || "Não foi possível enviar.");
       }
       showReceipt(result.report || {});
     }).catch(function (error) {
@@ -286,7 +286,7 @@
     setupInstallation();
 
     if (!hasApi()) {
-      setMessage("Modo demonstracao local. Configure a URL do Apps Script antes de publicar.");
+      setMessage("Modo demonstração local. Configure a URL do Apps Script antes de publicar.");
     }
   }
 

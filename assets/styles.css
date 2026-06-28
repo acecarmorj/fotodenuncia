@@ -68,7 +68,7 @@ button:disabled {
   border: 2px solid #fff;
   border-radius: var(--radius);
   background-color: #fff;
-  background-image: url("./clickcidade-app-icon.png?v=20260628-optional-labels");
+  background-image: url("./clickcidade-app-icon.png?v=20260628-ux-operacao-r3");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -231,6 +231,78 @@ a.secondary-button {
 
 .citizen-card .field-label:not(:first-child) {
   margin-top: 14px;
+}
+
+
+.citizen-guide {
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--primary);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 8px;
+  box-shadow: 0 8px 24px rgba(38, 50, 56, .06);
+}
+
+.guide-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.guide-steps span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+  border-radius: 4px;
+  background: var(--surface-soft);
+  padding: 6px 4px;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.guide-steps strong {
+  display: inline-grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 11px;
+}
+
+.field-help {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.privacy-note {
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--green);
+  border-radius: var(--radius);
+  background: #fbfdfb;
+  padding: 10px 12px;
+}
+
+.privacy-note summary {
+  cursor: pointer;
+  color: var(--green-dark);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.privacy-note p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
 }
 
 .citizen-receipt {
@@ -722,6 +794,88 @@ a.secondary-button {
 .filters-card input,
 .filters-card select {
   margin-top: 6px;
+}
+
+
+.topbar-hint {
+  margin-top: 4px !important;
+  color: var(--graphite) !important;
+  font-size: 13px;
+  font-weight: 800 !important;
+}
+
+.operation-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: -2px 0 12px;
+}
+
+.operation-strip article {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+  padding: 12px;
+  box-shadow: 0 10px 28px rgba(38, 50, 56, .06);
+}
+
+.operation-strip span,
+.operation-strip small {
+  display: block;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.operation-strip span {
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.operation-strip strong {
+  display: block;
+  margin: 4px 0 2px;
+  color: var(--ink);
+  font-size: 25px;
+  line-height: 1;
+}
+
+.operation-strip small {
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+.operation-strip article:nth-child(1) {
+  border-top: 3px solid var(--red);
+}
+
+.operation-strip article:nth-child(2) {
+  border-top: 3px solid var(--amber);
+}
+
+.operation-strip article:nth-child(3) {
+  border-top: 3px solid var(--primary);
+}
+
+.operation-strip article:nth-child(4) {
+  border-top: 3px solid var(--green);
+}
+
+.report-item-tags {
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+}
+
+.status-pill.triagem,
+.status-pill.encaminhada,
+.status-pill.vistoria {
+  background: var(--amber-soft);
+  color: #7c4d12;
+}
+
+.status-pill.improcedente {
+  background: #e9ecee;
+  color: #4f5c60;
 }
 
 .panel-grid {
@@ -1411,6 +1565,7 @@ a.secondary-button {
   }
 
   .stats-grid,
+  .operation-strip,
   .filters-card,
   .detail-meta,
   .detail-actions,

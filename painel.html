@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#263238">
   <title>Painel ClickCidade</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="./assets/styles.css?v=20260628-optional-labels">
+  <link rel="stylesheet" href="./assets/styles.css?v=20260628-ux-operacao-r3">
 </head>
 <body class="panel-page">
   <div class="login-screen" id="loginScreen">
@@ -26,14 +26,15 @@
         <span class="brand-mark" aria-label="ClickCidade"></span>
         <div>
           <strong>ClickCidade</strong>
-          <small>Painel de denuncias</small>
+          <small>Painel operacional</small>
         </div>
       </div>
       <nav class="panel-nav">
         <button class="nav-button is-active" type="button" data-focus-section="overview">Resumo</button>
+        <button class="nav-button" type="button" data-focus-section="attentionPanel">Prioridade</button>
         <button class="nav-button" type="button" data-focus-section="mapPanel">Mapa</button>
-        <button class="nav-button" type="button" data-focus-section="listPanel">Denuncias</button>
-        <button class="nav-button" type="button" data-focus-section="reportsPanel">Relatorios</button>
+        <button class="nav-button" type="button" data-focus-section="listPanel">Denúncias</button>
+        <button class="nav-button" type="button" data-focus-section="reportsPanel">Relatórios</button>
       </nav>
       <button class="secondary-button" type="button" id="logoutButton">Sair</button>
     </aside>
@@ -42,7 +43,8 @@
       <header class="panel-topbar">
         <div>
           <h1>Painel operacional</h1>
-          <p id="lastSync">Aguardando sincronizacao.</p>
+          <p id="lastSync">Aguardando sincronização.</p>
+          <p class="topbar-hint">Use a fila de prioridade para decidir o primeiro atendimento do dia.</p>
         </div>
         <div class="topbar-actions">
           <button class="secondary-button" type="button" id="refreshButton">Atualizar</button>
@@ -57,11 +59,18 @@
         <article class="stat-card"><span>Terreno baldio</span><strong id="statLand">0</strong></article>
       </section>
 
+      <section class="operation-strip" aria-label="Resumo operacional">
+        <article><span>Novas</span><strong id="statNew">0</strong><small>precisam de triagem</small></article>
+        <article><span>Em andamento</span><strong id="statProgress">0</strong><small>triagem, encaminhada ou vistoria</small></article>
+        <article><span>Atrasadas</span><strong id="statOverdue">0</strong><small>abertas há mais tempo</small></article>
+        <article><span>Resolvidas</span><strong id="statResolved">0</strong><small>concluídas</small></article>
+      </section>
+
       <section class="attention-section" id="attentionPanel">
         <div class="attention-head">
           <div>
-            <span class="section-label">Atencao</span>
-            <h2>Fila de prioridade</h2>
+            <span class="section-label">Prioridade</span>
+            <h2>O que precisa de ação primeiro</h2>
           </div>
           <p id="attentionSummary">Nenhum atendimento pendente.</p>
         </div>
@@ -91,14 +100,14 @@
           </select>
         </label>
         <label>
-          Territorio
+          Território
           <select id="filterTerritory">
             <option value="">Todos</option>
           </select>
         </label>
         <label>
           Busca
-          <input id="filterSearch" type="search" placeholder="Protocolo, WhatsApp, referencia">
+          <input id="filterSearch" type="search" placeholder="Protocolo, WhatsApp, referência">
         </label>
       </section>
 
@@ -107,16 +116,16 @@
           <div class="panel-card-head">
             <div>
               <h2>Mapa territorial</h2>
-              <p id="mapSummary">Base territorial do ACE com denuncias sobrepostas.</p>
+              <p id="mapSummary">Denúncias com GPS sobrepostas ao território.</p>
             </div>
             <div class="map-controls">
               <div class="map-style-switcher" aria-label="Tipo de mapa">
                 <button class="map-style-button is-active" type="button" data-map-base="streets">Ruas</button>
                 <button class="map-style-button" type="button" data-map-base="terrain">Relevo</button>
-                <button class="map-style-button" type="button" data-map-base="satellite">Satelite</button>
+                <button class="map-style-button" type="button" data-map-base="satellite">Satélite</button>
               </div>
               <div class="map-toggles">
-                <button class="toggle-button is-on" type="button" data-map-layer="territories">Territorios</button>
+                <button class="toggle-button is-on" type="button" data-map-layer="territories">Territórios</button>
                 <button class="toggle-button is-on" type="button" data-map-layer="heat">Calor</button>
               </div>
             </div>
@@ -127,8 +136,8 @@
         <article class="list-panel" id="listPanel">
           <div class="panel-card-head">
             <div>
-              <h2>Denuncias</h2>
-              <p id="listSummary">Nenhuma denuncia carregada.</p>
+              <h2>Denúncias</h2>
+              <p id="listSummary">Nenhuma denúncia carregada.</p>
             </div>
           </div>
           <div class="report-list" id="reportList"></div>
@@ -138,10 +147,10 @@
           <div class="panel-card-head">
             <div>
               <h2>Detalhes</h2>
-              <p id="detailSubtitle">Selecione uma denuncia.</p>
+              <p id="detailSubtitle">Selecione uma denúncia.</p>
             </div>
           </div>
-          <div class="detail-empty" id="detailEmpty">Nenhuma denuncia selecionada.</div>
+          <div class="detail-empty" id="detailEmpty">Nenhuma denúncia selecionada.</div>
           <div class="detail-content" id="detailContent" hidden></div>
         </article>
       </section>
@@ -149,26 +158,26 @@
       <section class="reports-section" id="reportsPanel">
         <header class="reports-head">
           <div>
-            <span class="section-label">Relatorios</span>
-            <h2>Visao gerencial</h2>
-            <p id="reportSummary">Indicadores consolidados das denuncias recebidas.</p>
+            <span class="section-label">Relatórios</span>
+            <h2>Visão gerencial</h2>
+            <p id="reportSummary">Indicadores consolidados das denúncias recebidas.</p>
           </div>
           <div class="report-actions">
-            <button class="secondary-button" type="button" id="exportReportButton">Exportar relatorio</button>
+            <button class="secondary-button" type="button" id="exportReportButton">Exportar relatório</button>
             <button class="primary-button" type="button" id="printReportButton">Imprimir / PDF</button>
           </div>
         </header>
 
         <div class="report-filters">
           <label>
-            Periodo
+            Período
             <select id="reportPeriod">
-              <option value="all">Todo o periodo</option>
+              <option value="all">Todo o período</option>
               <option value="today">Hoje</option>
-              <option value="7">Ultimos 7 dias</option>
-              <option value="30" selected>Ultimos 30 dias</option>
-              <option value="90">Ultimos 90 dias</option>
-              <option value="custom">Periodo personalizado</option>
+              <option value="7">Últimos 7 dias</option>
+              <option value="30" selected>Últimos 30 dias</option>
+              <option value="90">Últimos 90 dias</option>
+              <option value="custom">Período personalizado</option>
             </select>
           </label>
           <label>
@@ -181,7 +190,7 @@
             </select>
           </label>
           <label>
-            Territorio
+            Território
             <select id="reportTerritory">
               <option value="">Todos</option>
             </select>
@@ -202,34 +211,34 @@
           <article class="report-kpi">
             <span>Recebidas</span>
             <strong id="reportTotal">0</strong>
-            <small>No periodo selecionado</small>
+            <small>No período selecionado</small>
           </article>
           <article class="report-kpi">
             <span>Em aberto</span>
             <strong id="reportOpen">0</strong>
-            <small>Aguardando conclusao</small>
+            <small>Aguardando conclusão</small>
           </article>
           <article class="report-kpi">
             <span>Resolvidas</span>
             <strong id="reportResolved">0</strong>
-            <small>Atendimento concluido</small>
+            <small>Atendimento concluído</small>
           </article>
           <article class="report-kpi">
-            <span>Taxa de resolucao</span>
+            <span>Taxa de resolução</span>
             <strong id="reportResolutionRate">0%</strong>
             <small>Resolvidas sobre o total</small>
           </article>
           <article class="report-kpi">
-            <span>Tempo medio</span>
+            <span>Tempo médio</span>
             <strong id="reportAverageTime">-</strong>
-            <small>Do recebimento a resolucao</small>
+            <small>Do recebimento à resolução</small>
           </article>
         </div>
 
         <div class="report-grid">
           <article class="report-panel">
             <div class="report-panel-head">
-              <h3>Denuncias por tipo</h3>
+              <h3>Denúncias por tipo</h3>
               <span id="reportCategoryTotal">0 registros</span>
             </div>
             <div class="report-bars" id="reportCategoryBars"></div>
@@ -237,7 +246,7 @@
 
           <article class="report-panel">
             <div class="report-panel-head">
-              <h3>Situacao dos atendimentos</h3>
+              <h3>Situação dos atendimentos</h3>
               <span id="reportStatusTotal">0 registros</span>
             </div>
             <div class="report-bars" id="reportStatusBars"></div>
@@ -245,14 +254,14 @@
 
           <article class="report-panel report-territories">
             <div class="report-panel-head">
-              <h3>Resumo por territorio</h3>
-              <span id="reportTerritoryTotal">0 territorios</span>
+              <h3>Resumo por território</h3>
+              <span id="reportTerritoryTotal">0 territórios</span>
             </div>
             <div class="report-table-wrap">
               <table class="report-table">
                 <thead>
                   <tr>
-                    <th>Territorio</th>
+                    <th>Território</th>
                     <th>Total</th>
                     <th>Novas</th>
                     <th>Em aberto</th>
@@ -271,8 +280,8 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js" integrity="sha256-65UqrlgGoRAnKfKRuriH3eeDrOhZgZo1SCenduc+SGo=" crossorigin=""></script>
-  <script src="./assets/runtime-config.js?v=20260628-optional-labels"></script>
+  <script src="./assets/runtime-config.js?v=20260628-ux-operacao-r3"></script>
   <script src="./assets/carmo-territorios-data.js"></script>
-  <script src="./assets/painel.js?v=20260628-optional-labels"></script>
+  <script src="./assets/painel.js?v=20260628-ux-operacao-r3"></script>
 </body>
 </html>

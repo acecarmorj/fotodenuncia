@@ -1,6 +1,21 @@
 CLICKCIDADE - ROTEIRO DO PROJETO
 ================================
 
+INSTRUCAO OBRIGATORIA PARA TODA IA
+----------------------------------
+Antes de alterar este projeto, leia este arquivo por completo.
+
+Ao concluir qualquer alteracao relevante:
+1. Atualize este ROTEIRO_CLICKCIDADE.txt na mesma tarefa.
+2. Registre no Historico a data e um resumo objetivo do que mudou.
+3. Atualize a secao Revisao tecnica atual com as validacoes realizadas.
+4. Atualize a lista de testes pendentes quando um teste for concluido.
+5. Preserve as decisoes anteriores e nao apague o historico.
+6. Nao crie outros arquivos de alteracoes, diario, checklist ou roteiro.
+7. Mantenha este arquivo como a unica fonte de historico e acompanhamento do projeto.
+8. Nao declare um teste como concluido sem realmente executa-lo.
+9. Informe claramente quando uma mudanca exigir atualizacao da API ou do Google Apps Script.
+
 Objetivo
 --------
 Criar um sistema online, nos moldes do ACE, para que o cidadao envie FotoDenuncias de lixo, foco de dengue ou terreno baldio, e para que a equipe acompanhe tudo em um painel com mapa territorial de Carmo/RJ.
@@ -45,6 +60,18 @@ Arquivos de manutencao obrigatorios
 Historico
 ---------
 2026-06-28
+- Revisada a versao de UX e operacao recebida em F:\fotodenuncia.
+- Mantido no painel o resumo operacional com Novas, Em andamento, Atrasadas e Resolvidas.
+- Mantidos o atalho de Prioridade e as etiquetas de status na lista de denuncias.
+- Compactado o guia Foto, Tipo e GPS para ocupar uma unica faixa no celular.
+- Transformado o aviso de privacidade em area recolhida para preservar o fluxo simples do cidadao.
+- Removida uma duplicacao de regras do painel dentro do CSS responsivo.
+- Alinhados cache offline, arquivos HTML e configuracao na versao 20260628-ux-operacao-r3.
+- Revisados acentos, cedilha e crase em todos os textos visiveis da tela do cidadao.
+- Revisados acentos e cedilha nos menus, filtros, mapa, detalhes, relatorios, mensagens e CSV do painel.
+- Unificados historico, revisao tecnica e checklist neste unico roteiro.
+- Adicionada instrucao obrigatoria para que toda IA mantenha este arquivo atualizado e nao crie documentos paralelos.
+- Confirmado que API, Code.gs, Google Sheets e Google Drive nao foram alterados nesta revisao.
 - A identidade visual foi redesenhada do zero para um resultado mais profissional.
 - Novo simbolo: marcador laranja com montanha azul, cidade baixa branca e morros verdes.
 - Novo nome horizontal: Click em grafite e Cidade em laranja, sem letras deformadas.
@@ -146,6 +173,41 @@ Historico
 - Publicado commit inicial no repositorio acecarmorj/fotodenuncia, branch main.
 - GitHub Pages habilitado a partir da branch main, pasta raiz.
 - Endereco publico esperado: https://acecarmorj.github.io/fotodenuncia/
+
+Revisao tecnica atual
+---------------------
+Escopo confirmado:
+- Melhorias de UX aplicadas na tela do cidadao e no painel operacional.
+- Protocolo preservado sem mudancas na geracao, exibicao, compartilhamento ou armazenamento.
+- Backend Google Apps Script, api.txt, Google Sheets e Google Drive nao alterados nesta revisao.
+- Sem npm, React, Vue ou Angular.
+- API e apps-script\Code.gs permanecem identicos.
+
+Validacoes concluidas:
+- Sintaxe de assets\app.js validada.
+- Sintaxe de assets\painel.js validada.
+- Sintaxe de assets\runtime-config.js validada.
+- Sintaxe de assets\carmo-territorios-data.js validada.
+- Sintaxe de sw.js validada.
+- manifest.webmanifest validado.
+- Cache offline alinhado com a versao 20260628-ux-operacao-r3.
+- Formulario conferido em dimensao de celular sem rolagem horizontal.
+- Painel conferido em tablet de 8,7 polegadas e computador sem rolagem horizontal.
+- Login, resumo operacional e atualizacao de status testados no modo demonstrativo.
+- Acentos, cedilha e crase revisados na tela do cidadao.
+- Acentos e cedilha revisados no painel e nos cabecalhos do CSV.
+- Nenhum erro ou alerta encontrado no console do navegador.
+
+Testes que exigem uso real
+--------------------------
+[ ] Tirar ou escolher uma foto em um celular.
+[ ] Confirmar a localizacao pelo GPS do aparelho.
+[ ] Enviar uma denuncia real para a API configurada.
+[ ] Conferir o protocolo retornado pelo Google Apps Script.
+[ ] Conferir a nova linha no Google Sheets e a foto no Google Drive.
+[ ] Atualizar uma denuncia real pelo painel.
+[ ] Exportar o CSV definitivo.
+[ ] Imprimir ou salvar o relatorio definitivo em PDF.
 
 Proximos passos
 ---------------

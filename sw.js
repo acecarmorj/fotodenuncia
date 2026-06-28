@@ -1,11 +1,11 @@
-var CACHE_NAME = "clickcidade-20260628-optional-labels";
+var CACHE_NAME = "clickcidade-20260628-ux-operacao-r3";
 var APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "./assets/styles.css?v=20260628-optional-labels",
-  "./assets/runtime-config.js?v=20260628-optional-labels",
-  "./assets/app.js?v=20260628-optional-labels",
+  "./assets/styles.css?v=20260628-ux-operacao-r3",
+  "./assets/runtime-config.js?v=20260628-ux-operacao-r3",
+  "./assets/app.js?v=20260628-ux-operacao-r3",
   "./assets/clickcidade-logo.png",
   "./assets/clickcidade-mobile-logo.png",
   "./assets/clickcidade-app-icon.png"
@@ -55,7 +55,7 @@ self.addEventListener("fetch", function (event) {
         if (event.request.mode === "navigate") {
           return caches.match("./index.html");
         }
-        throw new Error("Recurso indisponivel sem conexao.");
+        throw new Error("Recurso indisponível sem conexão.");
       });
     })
   );

@@ -16,6 +16,11 @@
     improcedente: "Improcedente"
   };
   var statusOrder = ["nova", "triagem", "encaminhada", "vistoria", "resolvida", "improcedente"];
+  var priorityLabels = {
+    alta: "Alta",
+    media: "Média",
+    baixa: "Baixa"
+  };
   var categoryColors = {
     lixo: "#e67e22",
     dengue: "#d63c32",
@@ -114,7 +119,7 @@
       if (photoReport && /^data:image\//i.test(photoDataUrl || "")) {
         return { ok: true, photoDataUrl: photoDataUrl, demo: true };
       }
-      return { ok: false, error: "Foto indisponivel no modo demonstracao." };
+      return { ok: false, error: "Foto indisponível no modo demonstração." };
     }
     if (payload.action === "update_report") {
       reports = reports.map(function (report) {
@@ -141,7 +146,7 @@
       localStorage.setItem("clickcidade_demo_reports", JSON.stringify(reports));
       return { ok: true, reports: reports, demo: true };
     }
-    return { ok: false, error: "Acao indisponivel no modo demonstracao." };
+    return { ok: false, error: "Ação indisponível no modo demonstração." };
   }
 
   function buildDemoReports() {
@@ -159,7 +164,7 @@
         status: "vistoria",
         citizenName: "Morador identificado",
         phone: "(22) 99999-0001",
-        reference: "Proximo ao campo do bairro.",
+        reference: "Próximo ao campo do bairro.",
         latitude: -21.9337,
         longitude: -42.6084,
         photoUrl: "./assets/clickcidade-logo.png",
@@ -193,16 +198,16 @@
         updatedAt: daysAgo(1),
         category: "terreno",
         status: "resolvida",
-        citizenName: "Cidada identificada",
+        citizenName: "Cidadã identificada",
         phone: "(22) 99999-0003",
-        reference: "Rua de demonstracao.",
+        reference: "Rua de demonstração.",
         latitude: -21.9308,
         longitude: -42.6093,
         photoUrl: "./assets/clickcidade-logo.png",
         resolutionPhotoUrl: "./assets/clickcidade-logo.png",
         resolvedAt: daysAgo(1),
-        notes: "Servico concluido.",
-        responsible: "Fiscalizacao",
+        notes: "Serviço concluído.",
+        responsible: "Fiscalização",
         priority: "baixa",
         source: "demo"
       }
@@ -392,7 +397,7 @@
     setLoginMessage("Entrando...");
     return postApi({ action: "panel_login", password: password }).then(function (result) {
       if (!result || !result.ok || !result.session) {
-        throw new Error((result && result.error) || "Senha nao autorizada.");
+        throw new Error((result && result.error) || "Senha não autorizada.");
       }
       state.session = result.session;
       sessionStorage.setItem(getPanelSessionKey(), state.session);
@@ -400,7 +405,7 @@
       $("panelShell").hidden = false;
       bootPanel();
     }).catch(function (error) {
-      setLoginMessage(error.message || "Nao foi possivel entrar.", "error");
+      setLoginMessage(error.message || "Não foi possível entrar.", "error");
     });
   }
 
@@ -408,13 +413,13 @@
     $("lastSync").textContent = "Sincronizando...";
     return postApi({ action: "list_reports", session: state.session }).then(function (result) {
       if (!result || !result.ok) {
-        throw new Error((result && result.error) || "Nao foi possivel carregar.");
+        throw new Error((result && result.error) || "Não foi possível carregar.");
       }
       state.reports = enrichReports(result.reports || []);
       applyFilters();
-      $("lastSync").textContent = "Atualizado em " + new Date().toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }) + (result.demo ? " - modo demonstracao" : "");
+      $("lastSync").textContent = "Atualizado em " + new Date().toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }) + (result.demo ? " - modo demonstração" : "");
     }).catch(function (error) {
-      $("lastSync").textContent = error.message || "Falha na sincronizacao.";
+      $("lastSync").textContent = error.message || "Falha na sincronização.";
     });
   }
 
@@ -453,11 +458,24 @@
 
   function renderStats() {
     var stats = buildStats(state.reports);
+    var openReports = state.reports.filter(isOpen);
+    var progress = state.reports.filter(function (item) {
+      return ["triagem", "encaminhada", "vistoria"].indexOf(item.status) >= 0;
+    }).length;
+    var overdue = openReports.filter(function (item) {
+      return deadlineInfo(item).className === "is-overdue";
+    }).length;
+    var resolved = state.reports.filter(function (item) { return item.status === "resolvida"; }).length;
+
     $("statTotal").textContent = stats.total;
     $("statTrash").textContent = stats.trash;
     $("statDengue").textContent = stats.dengue;
     $("statLand").textContent = stats.land;
-    $("listSummary").textContent = state.filtered.length + " de " + state.reports.length + " denuncias";
+    if ($("statNew")) { $("statNew").textContent = state.reports.filter(function (item) { return item.status === "nova"; }).length; }
+    if ($("statProgress")) { $("statProgress").textContent = progress; }
+    if ($("statOverdue")) { $("statOverdue").textContent = overdue; }
+    if ($("statResolved")) { $("statResolved").textContent = resolved; }
+    $("listSummary").textContent = state.filtered.length + " de " + state.reports.length + " denúncias";
     $("mapSummary").textContent = state.filtered.filter(function (item) { return item.latitude && item.longitude; }).length + " pontos com GPS no mapa.";
   }
 
@@ -475,7 +493,7 @@
     });
 
     $("attentionSummary").textContent = pending.length
-      ? pending.length + (pending.length === 1 ? " atendimento em aberto." : " atendimentos em aberto.")
+      ? pending.length + (pending.length === 1 ? " atendimento em aberto. Priorize atrasadas, dengue e registros mais antigos." : " atendimentos em aberto. Priorize atrasadas, dengue e registros mais antigos.")
       : "Nenhum atendimento pendente.";
     list.innerHTML = "";
 
@@ -486,9 +504,9 @@
       button.className = "attention-item " + deadline.className;
       button.innerHTML =
         "<div class=\"attention-item-main\">" +
-          "<span class=\"priority-label " + escapeAttribute(report.priority) + "\">" + escapeHtml(report.priority) + "</span>" +
+          "<span class=\"priority-label " + escapeAttribute(report.priority) + "\">" + escapeHtml(priorityLabels[report.priority] || report.priority) + "</span>" +
           "<strong>" + escapeHtml(report.protocol || report.id) + "</strong>" +
-          "<small>" + escapeHtml(categoryLabels[report.category]) + " | " + escapeHtml(report.territory || "Sem territorio") + "</small>" +
+          "<small>" + escapeHtml(categoryLabels[report.category]) + " | " + escapeHtml(report.territory || "Sem território") + "</small>" +
         "</div>" +
         "<div class=\"deadline-label\">" +
           "<strong>" + deadline.age + (deadline.age === 1 ? " dia aberto" : " dias abertos") + "</strong>" +
@@ -505,7 +523,7 @@
     });
 
     if (!pending.length) {
-      list.innerHTML = "<div class=\"attention-empty\">A fila esta em dia.</div>";
+      list.innerHTML = "<div class=\"attention-empty\">A fila está em dia.</div>";
     }
   }
 
@@ -566,9 +584,9 @@
     }
     var start = $("reportStartDate").value;
     var end = $("reportEndDate").value;
-    if (!start && !end) { return "Periodo personalizado"; }
-    return "De " + (start ? new Date(start + "T00:00:00").toLocaleDateString("pt-BR") : "inicio") +
-      " ate " + (end ? new Date(end + "T00:00:00").toLocaleDateString("pt-BR") : "hoje");
+    if (!start && !end) { return "Período personalizado"; }
+    return "De " + (start ? new Date(start + "T00:00:00").toLocaleDateString("pt-BR") : "início") +
+      " até " + (end ? new Date(end + "T00:00:00").toLocaleDateString("pt-BR") : "hoje");
   }
 
   function toggleCustomReportDates() {
@@ -603,7 +621,7 @@
   function renderTerritoryReport(items) {
     var groups = {};
     items.forEach(function (report) {
-      var name = report.territory || "Sem territorio";
+      var name = report.territory || "Sem território";
       if (!groups[name]) {
         groups[name] = { name: name, total: 0, newCount: 0, open: 0, resolved: 0, dengue: 0 };
       }
@@ -617,7 +635,7 @@
     var rows = Object.keys(groups).map(function (key) { return groups[key]; }).sort(function (a, b) {
       return b.total - a.total || a.name.localeCompare(b.name, "pt-BR");
     });
-    $("reportTerritoryTotal").textContent = rows.length + (rows.length === 1 ? " territorio" : " territorios");
+    $("reportTerritoryTotal").textContent = rows.length + (rows.length === 1 ? " território" : " territórios");
     $("reportTerritoryRows").innerHTML = rows.length ? rows.map(function (row) {
       return "<tr>" +
         "<td><strong>" + escapeHtml(row.name) + "</strong></td>" +
@@ -627,7 +645,7 @@
         "<td>" + row.resolved + "</td>" +
         "<td>" + row.dengue + "</td>" +
       "</tr>";
-    }).join("") : "<tr><td colspan=\"6\" class=\"report-table-empty\">Nenhum registro no periodo selecionado.</td></tr>";
+    }).join("") : "<tr><td colspan=\"6\" class=\"report-table-empty\">Nenhum registro no período selecionado.</td></tr>";
   }
 
   function renderReports() {
@@ -645,7 +663,7 @@
     $("reportResolved").textContent = resolved;
     $("reportResolutionRate").textContent = rate + "%";
     $("reportAverageTime").textContent = formatAverageResolution(items);
-    $("reportSummary").textContent = periodLabel + " | " + items.length + (items.length === 1 ? " denuncia analisada." : " denuncias analisadas.");
+    $("reportSummary").textContent = periodLabel + " | " + items.length + (items.length === 1 ? " denúncia analisada." : " denúncias analisadas.");
     $("reportCategoryTotal").textContent = items.length + (items.length === 1 ? " registro" : " registros");
     $("reportStatusTotal").textContent = items.length + (items.length === 1 ? " registro" : " registros");
 
@@ -666,7 +684,7 @@
     if (!state.filtered.length) {
       var empty = document.createElement("div");
       empty.className = "detail-empty";
-      empty.textContent = "Nenhuma denuncia encontrada.";
+      empty.textContent = "Nenhuma denúncia encontrada.";
       list.appendChild(empty);
       return;
     }
@@ -678,11 +696,12 @@
       button.innerHTML =
         "<div>" +
           "<strong>" + escapeHtml(report.protocol || report.id) + "</strong>" +
-          "<small>" + escapeHtml(formatDate(report.createdAt)) + " | " + escapeHtml(report.territory || "Sem territorio") + "</small>" +
+          "<small>" + escapeHtml(formatDate(report.createdAt)) + " | " + escapeHtml(report.territory || "Sem território") + "</small>" +
           (isOpen(report) ? "<small class=\"list-deadline " + deadline.className + "\">" + escapeHtml(deadline.label) + "</small>" : "") +
         "</div>" +
-        "<div>" +
+        "<div class=\"report-item-tags\">" +
           "<span class=\"pill " + report.category + "\">" + escapeHtml(categoryLabels[report.category]) + "</span>" +
+          "<span class=\"pill status-pill " + escapeAttribute(report.status) + "\">" + escapeHtml(statusLabels[report.status]) + "</span>" +
         "</div>";
       button.addEventListener("click", function () {
         state.selectedId = report.id;
@@ -720,7 +739,7 @@
     legend.onAdd = function () {
       var container = L.DomUtil.create("div", "map-category-legend");
       container.innerHTML =
-        "<strong>Tipos de denuncia</strong>" +
+        "<strong>Tipos de denúncia</strong>" +
         "<span><i style=\"background:" + categoryColors.lixo + "\"></i>Lixo</span>" +
         "<span><i style=\"background:" + categoryColors.dengue + "\"></i>Foco de dengue</span>" +
         "<span><i style=\"background:" + categoryColors.terreno + "\"></i>Terreno baldio</span>";
@@ -758,7 +777,7 @@
         weight: polygon.territoryType === "distrito" ? 1.8 : 1,
         fillColor: polygon.territoryType === "distrito" ? "#e1eef5" : "#fce8da",
         fillOpacity: polygon.territoryType === "distrito" ? .18 : .13
-      }).bindPopup("<strong>" + escapeHtml(polygon.folder || polygon.originalFolder || "Territorio") + "</strong><br>Q " + escapeHtml(polygon.name || polygon.originalName || ""));
+      }).bindPopup("<strong>" + escapeHtml(polygon.folder || polygon.originalFolder || "Território") + "</strong><br>Q " + escapeHtml(polygon.name || polygon.originalName || ""));
       layer.addTo(state.territoryLayer);
     });
   }
@@ -797,7 +816,7 @@
           "<strong>" + escapeHtml(report.protocol) + "</strong>" +
           "<span>" + escapeHtml(categoryLabels[report.category]) + "</span>" +
           "<span>" + escapeHtml(statusLabels[report.status]) + "</span>" +
-          "<span>" + escapeHtml(report.territory || "Sem territorio") + "</span>" +
+          "<span>" + escapeHtml(report.territory || "Sem território") + "</span>" +
         "</div>"
       );
       marker.on("click", function () {
@@ -864,7 +883,7 @@
       empty.hidden = false;
       content.hidden = true;
       content.innerHTML = "";
-      $("detailSubtitle").textContent = "Selecione uma denuncia.";
+      $("detailSubtitle").textContent = "Selecione uma denúncia.";
       return;
     }
 
@@ -875,7 +894,7 @@
       ? "https://www.google.com/maps?q=" + encodeURIComponent(report.latitude + "," + report.longitude)
       : "";
     var originalPhoto = buildPhotoBlock("original", "Foto recebida", report.photoId, report.photoUrl);
-    var resolutionPhoto = buildPhotoBlock("resolution", "Foto da conclusao", report.resolutionPhotoId, report.resolutionPhotoUrl);
+    var resolutionPhoto = buildPhotoBlock("resolution", "Foto da conclusão", report.resolutionPhotoId, report.resolutionPhotoUrl);
     var draft = state.resolutionDraft && state.resolutionDraft.reportId === report.id ? state.resolutionDraft : null;
 
     content.innerHTML =
@@ -884,32 +903,32 @@
         metaBox("Tipo", categoryLabels[report.category]) +
         metaBox("Status", statusLabels[report.status]) +
         metaBox("Data", formatDate(report.createdAt)) +
-        metaBox("Tempo aberto", isOpen(report) ? ageInDays(report) + (ageInDays(report) === 1 ? " dia" : " dias") : "Concluida") +
-        metaBox("Territorio", report.territory || "-") +
+        metaBox("Tempo aberto", isOpen(report) ? ageInDays(report) + (ageInDays(report) === 1 ? " dia" : " dias") : "Concluída") +
+        metaBox("Território", report.territory || "-") +
         metaBox("Nome", report.citizenName || "-") +
         metaBox("WhatsApp", report.phone || "-") +
         metaBox("GPS", report.latitude && report.longitude ? report.latitude + ", " + report.longitude : "Sem GPS confirmado") +
         (report.resolvedAt ? metaBox("Resolvida em", formatDate(report.resolvedAt)) : "") +
       "</div>" +
-      "<div class=\"meta-box\"><span>Referencia</span><strong>" + escapeHtml(report.reference || "-") + "</strong></div>" +
+      "<div class=\"meta-box\"><span>Referência</span><strong>" + escapeHtml(report.reference || "-") + "</strong></div>" +
       "<form class=\"detail-form\" id=\"detailForm\">" +
         "<label class=\"field-label\">Status<select id=\"detailStatus\">" + statusOrder.map(function (status) {
           return "<option value=\"" + status + "\"" + (status === report.status ? " selected" : "") + ">" + escapeHtml(statusLabels[status]) + "</option>";
         }).join("") + "</select></label>" +
         "<label class=\"field-label\">Prioridade<select id=\"detailPriority\">" +
           ["alta", "media", "baixa"].map(function (priority) {
-            var label = priority.charAt(0).toUpperCase() + priority.slice(1);
+            var label = priorityLabels[priority] || priority;
             return "<option value=\"" + priority + "\"" + (priority === report.priority ? " selected" : "") + ">" + label + "</option>";
           }).join("") +
         "</select></label>" +
-        "<label class=\"field-label\">Responsavel<input id=\"detailResponsible\" maxlength=\"120\" value=\"" + escapeAttribute(report.responsible) + "\"></label>" +
-        "<label class=\"field-label\">Observacao interna<textarea id=\"detailNotes\" rows=\"4\" maxlength=\"900\">" + escapeHtml(report.notes) + "</textarea></label>" +
+        "<label class=\"field-label\">Responsável<input id=\"detailResponsible\" maxlength=\"120\" value=\"" + escapeAttribute(report.responsible) + "\"></label>" +
+        "<label class=\"field-label\">Observação interna<textarea id=\"detailNotes\" rows=\"4\" maxlength=\"900\">" + escapeHtml(report.notes) + "</textarea></label>" +
         "<div class=\"resolution-upload\">" +
-          "<span class=\"field-label\">Comprovacao do servico</span>" +
+          "<span class=\"field-label\">Comprovação do serviço</span>" +
           "<input class=\"file-input\" id=\"resolutionPhotoInput\" type=\"file\" accept=\"image/*\" capture=\"environment\">" +
-          "<button class=\"photo-button\" id=\"resolutionPhotoButton\" type=\"button\">" + (report.resolutionPhotoId || report.resolutionPhotoUrl ? "Substituir foto da conclusao" : "Adicionar foto da conclusao") + "</button>" +
-          "<img class=\"resolution-preview\" id=\"resolutionPreview\" alt=\"Previa da foto de conclusao\"" + (draft ? " src=\"" + escapeAttribute(draft.dataUrl) + "\"" : " hidden") + ">" +
-          "<small id=\"resolutionPhotoName\">" + escapeHtml(draft ? draft.name : (report.resolutionPhotoId || report.resolutionPhotoUrl ? "Foto de conclusao ja anexada." : "Opcional para registrar o resultado do servico.")) + "</small>" +
+          "<button class=\"photo-button\" id=\"resolutionPhotoButton\" type=\"button\">" + (report.resolutionPhotoId || report.resolutionPhotoUrl ? "Substituir foto da conclusão" : "Adicionar foto da conclusão") + "</button>" +
+          "<img class=\"resolution-preview\" id=\"resolutionPreview\" alt=\"Prévia da foto de conclusão\"" + (draft ? " src=\"" + escapeAttribute(draft.dataUrl) + "\"" : " hidden") + ">" +
+          "<small id=\"resolutionPhotoName\">" + escapeHtml(draft ? draft.name : (report.resolutionPhotoId || report.resolutionPhotoUrl ? "Foto de conclusão já anexada." : "Opcional para registrar o resultado do serviço.")) + "</small>" +
         "</div>" +
         "<div class=\"detail-actions\">" +
           "<button class=\"primary-button\" type=\"submit\">Salvar</button>" +
@@ -1029,7 +1048,7 @@
     if (hasApi() && options.photoId) {
       postApi({ action: "get_photo", session: state.session, photoId: options.photoId }).then(function (result) {
         if (!result || !result.ok || !result.photoDataUrl) {
-          throw new Error((result && result.error) || "Foto indisponivel.");
+          throw new Error((result && result.error) || "Foto indisponível.");
         }
         state.photoCache[options.photoId] = result.photoDataUrl;
         showApiPhoto(result.photoDataUrl);
@@ -1044,10 +1063,10 @@
   function resizePanelImage(file) {
     return new Promise(function (resolve, reject) {
       var reader = new FileReader();
-      reader.onerror = function () { reject(new Error("Nao foi possivel ler a foto.")); };
+      reader.onerror = function () { reject(new Error("Não foi possível ler a foto.")); };
       reader.onload = function () {
         var image = new Image();
-        image.onerror = function () { reject(new Error("Foto invalida.")); };
+        image.onerror = function () { reject(new Error("Foto inválida.")); };
         image.onload = function () {
           var maxSide = 1600;
           var scale = Math.min(1, maxSide / Math.max(image.width, image.height));
@@ -1077,7 +1096,7 @@
 
   function prepareResolutionPhoto(reportId, file) {
     if (!file) { return; }
-    setDetailMessage("Preparando foto da conclusao...");
+    setDetailMessage("Preparando foto da conclusão...");
     resizePanelImage(file).then(function (photo) {
       if (!findSelected() || findSelected().id !== reportId) { return; }
       state.resolutionDraft = {
@@ -1089,10 +1108,10 @@
       $("resolutionPreview").src = photo.dataUrl;
       $("resolutionPreview").hidden = false;
       $("resolutionPhotoName").textContent = photo.name;
-      setDetailMessage("Foto da conclusao pronta.", "success");
+      setDetailMessage("Foto da conclusão pronta.", "success");
     }).catch(function (error) {
       state.resolutionDraft = null;
-      setDetailMessage(error.message || "Nao foi possivel preparar a foto.", "error");
+      setDetailMessage(error.message || "Não foi possível preparar a foto.", "error");
     });
   }
 
@@ -1121,7 +1140,7 @@
     setDetailMessage("Salvando atendimento...");
     postApi(payload).then(function (result) {
       if (!result || !result.ok) {
-        throw new Error((result && result.error) || "Nao foi possivel salvar.");
+        throw new Error((result && result.error) || "Não foi possível salvar.");
       }
       state.resolutionDraft = null;
       return loadReports();
@@ -1137,15 +1156,15 @@
       "tipo",
       "status",
       "prioridade",
-      "territorio",
+      "território",
       "nome",
       "whatsapp",
-      "referencia",
+      "referência",
       "latitude",
       "longitude",
-      "responsavel",
+      "responsável",
       "resolvida_em",
-      "observacao"
+      "observação"
     ]];
     reports.forEach(function (report) {
       rows.push([
@@ -1153,7 +1172,7 @@
         report.createdAt,
         categoryLabels[report.category],
         statusLabels[report.status],
-        report.priority,
+        priorityLabels[report.priority] || report.priority,
         report.territory,
         report.citizenName,
         report.phone,
@@ -1272,7 +1291,7 @@
     });
 
     if (!hasApi()) {
-      setLoginMessage("Modo demonstracao local. Qualquer senha entra.");
+      setLoginMessage("Modo demonstração local. Qualquer senha entra.");
     }
   }
 
